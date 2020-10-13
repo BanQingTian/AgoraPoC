@@ -49,6 +49,8 @@ public class HomePage : MonoBehaviour
 
     void Start()
     {
+        CheckPermissions();
+
         CheckAppId();
 
         this.onJoinButtonClicked();
@@ -56,7 +58,7 @@ public class HomePage : MonoBehaviour
 
     void Update()
     {
-        CheckPermissions();
+        
     }
 
     private void CheckAppId()

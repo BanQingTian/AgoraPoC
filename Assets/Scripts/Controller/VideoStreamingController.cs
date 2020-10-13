@@ -48,7 +48,7 @@ public class VideoStreamingController
 #endif
     }
 
-    public void join(string channel)
+    public void join(string channel,bool useVideo = true)
     {
         Debug.Log("calling join (channel = " + channel + ")");
 
@@ -56,16 +56,33 @@ public class VideoStreamingController
             return;
 
         // set callbacks (optional)
+        mRtcEngine.OnRtcStats += (RtcStats stats) =>
+        {
+            string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
+                stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
+            Debug.Log(rtcStatsMessage);
+
+            //int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
+            //int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
+
+            //string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
+            //Debug.Log(mixingMessage);
+        };
+
         mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
         mRtcEngine.OnUserJoined = onUserJoined;
         mRtcEngine.OnUserOffline = onUserOffline;
 
-        // enable video
-        mRtcEngine.EnableVideo();
-        // allow camera output callback
-        mRtcEngine.EnableVideoObserver();
+        if (useVideo)
+        {
+            // enable video
+            mRtcEngine.EnableVideo();
+            // allow camera output callback
+            mRtcEngine.EnableVideoObserver();
 
-        startExternalVideoSource();
+            startExternalVideoSource();
+        }
+
 
         // join channel
         mRtcEngine.JoinChannel(channel, null, 0);
