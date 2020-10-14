@@ -40,15 +40,16 @@
 					v2f o;
 					o.vertex = UnityObjectToClipPos(v.vertex);
 					o.uv = TRANSFORM_TEX(v.uv, _MainTex);
+					//o.uv = v.uv;
 					return o;
 				}
 
 				fixed4 frag(v2f i) : SV_Target
 				{
 					// sample the texture
-					fixed2 uv = fixed2(i.uv.x, 1 - i.uv.y);
+					fixed2 uv = fixed2(1 - i.uv.x, 1 - i.uv.y);
 					fixed4 col = tex2D(_MainTex, uv);
-					return fixed4(col.b, col.g, col.r,1);
+					return fixed4(col.r, col.g, col.b,1);
 			}
 			ENDCG
 		}

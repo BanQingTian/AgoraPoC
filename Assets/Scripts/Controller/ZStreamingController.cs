@@ -1,4 +1,4 @@
-using UnityEngine;
+﻿using UnityEngine;
 using UnityEngine.UI;
 using agora_gaming_rtc;
 using agora_utilities;
@@ -10,7 +10,7 @@ using System;
 // How to enable video
 // How to join/leave channel
 // 
-public class VideoStreamingController
+public class ZStreamingController
 {
     // instance of agora engine
     private IRtcEngine mRtcEngine;
@@ -33,7 +33,6 @@ public class VideoStreamingController
     {
         // start sdk
         Debug.Log("initializeEngine");
-
         if (mRtcEngine != null)
         {
             Debug.Log("Engine exists. Please unload it first!");
@@ -202,7 +201,7 @@ public class VideoStreamingController
             //view.LoadVideSurface(uid);
 
 
-            //SmallView sv = MainController.Instance.PickSmallView(uid);
+            SmallView sv = MainController.Instance.PickSmallView(uid);
         }
     }
 
@@ -210,7 +209,7 @@ public class VideoStreamingController
     // delete the GameObject for this user
     private void onUserOffline(uint uid, USER_OFFLINE_REASON reason)
     {
-        Debug.Log("[VideoStreamingController] onUserOffline:" + uid + "----" + reason);
+        Debug.Log("[VideoStreamingController] onUserOffline:" + uid);
         //ViewBase view = GameObject.FindObjectOfType<ViewBase>();
         //if (view == null)
         //{
@@ -219,12 +218,12 @@ public class VideoStreamingController
         //}
         //view.UnloadVideoSurface(uid);
 
-        //SmallView sv = null;
-        //if (MainController.Instance.SmallViewDic.TryGetValue(uid, out sv))
-        //{
-        //    sv.Release();
-        //    MainController.Instance.SmallViewDic.Remove(uid);
-        //}
+        SmallView sv = null;
+        if (MainController.Instance.SmallViewDic.TryGetValue(uid, out sv))
+        {
+            sv.Release();
+            MainController.Instance.SmallViewDic.Remove(uid);
+        }
     }
 
     public void onSwitchCamera()

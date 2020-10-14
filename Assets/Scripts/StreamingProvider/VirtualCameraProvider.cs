@@ -31,14 +31,17 @@ public class VirtualCameraProvider : IStreamingProvider
 
         if (streamingCamera == null)
         {
-            streamingCamera = GameObject.Instantiate(Camera.main);
-            GameObject.DontDestroyOnLoad(streamingCamera.gameObject);
-            streamingCamera.depthTextureMode = DepthTextureMode.Depth;
+            //streamingCamera = GameObject.Instantiate(Camera.main);
+            //GameObject.DontDestroyOnLoad(streamingCamera.gameObject);
+            //streamingCamera.depthTextureMode = DepthTextureMode.Depth;
 
             targetTexture = new RenderTexture(width, height, 24, RenderTextureFormat.ARGB32);
+
             streamingCamera.targetTexture = targetTexture;
             readableTexture = new Texture2D(width, height, TextureFormat.RGBA32, false);
         }
+
+        Debug.LogError("-----------------------");
 
         while (true)
         {

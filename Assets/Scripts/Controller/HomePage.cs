@@ -96,16 +96,16 @@ public class HomePage : MonoBehaviour
         }
         // join channel and jump to next scene
         app.join(field.text);
-        SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
+        //SceneManager.sceneLoaded += OnLevelFinishedLoading; // configure GameObject after scene is loaded
 
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            SceneManager.LoadScene(PlaySceneForAndroid, LoadSceneMode.Single);
-        }
-        else
-        {
-            SceneManager.LoadScene(PlaySceneForWindows, LoadSceneMode.Single);
-        }
+        //if (Application.platform == RuntimePlatform.Android)
+        //{
+        //    SceneManager.LoadScene(PlaySceneForAndroid, LoadSceneMode.Single);
+        //}
+        //else
+        //{
+        //    SceneManager.LoadScene(PlaySceneForWindows, LoadSceneMode.Single);
+        //}
     }
 
     public void onLeaveButtonClicked()
