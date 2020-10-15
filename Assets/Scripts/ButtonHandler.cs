@@ -36,6 +36,19 @@ public class ButtonHandler : MonoBehaviour
             {
                 gameController.onExternalCameraClicked();
             }
+            else if (button.name == "MuteVideo")
+            {
+                gameController.OnMuteVideoClicked(!muteVideo);
+                muteVideo = !muteVideo;
+            }
+            else if (button.name == "MuteAudio")
+            {
+                gameController.OnMuteAudioClicked(!muteAudio);
+                muteAudio = !muteAudio;
+            }
         }
     }
+
+    bool muteVideo = false;
+    bool muteAudio = false;
 }

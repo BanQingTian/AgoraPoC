@@ -53,7 +53,7 @@ public class HomePage : MonoBehaviour
 
         CheckAppId();
 
-        this.onJoinButtonClicked();
+        //this.onJoinButtonClicked();
     }
 
     void Update()
@@ -106,6 +106,15 @@ public class HomePage : MonoBehaviour
         //{
         //    SceneManager.LoadScene(PlaySceneForWindows, LoadSceneMode.Single);
         //}
+    }
+
+    public void OnMuteVideoClicked(bool mute)
+    {
+        app.MuteLocalVideoStream(mute);
+    }
+    public void OnMuteAudioClicked(bool mute)
+    {
+        app.MuteLocalAudioStream(mute);
     }
 
     public void onLeaveButtonClicked()

@@ -93,17 +93,17 @@ public class VideoStreamingController
         }
         else
         {
-            if (usingVideo)
-            {
-                SmallView sv = null;
-                if (MainController.Instance.SmallViewDic.TryGetValue(MainController.CurUid, out sv))
-                {
-                    sv.Release();
-                    MainController.Instance.SmallViewDic.Remove(MainController.CurUid);
-                }
-                mRtcEngine.DisableVideo();
-                mRtcEngine.DisableVideoObserver();
-            }
+            //if (usingVideo)
+            //{
+            //    SmallView sv = null;
+            //    if (MainController.Instance.SmallViewDic.TryGetValue(MainController.CurUid, out sv))
+            //    {
+            //        sv.Release();
+            //        MainController.Instance.SmallViewDic.Remove(MainController.CurUid);
+            //    }
+            //    mRtcEngine.DisableVideo();
+            //    mRtcEngine.DisableVideoObserver();
+            //}
         }
 
         usingVideo = useVideo;
@@ -117,6 +117,16 @@ public class VideoStreamingController
     public string getSdkVersion()
     {
         return IRtcEngine.GetSdkVersion();
+    }
+
+    public void MuteLocalVideoStream(bool mute)
+    {
+        mRtcEngine.MuteLocalVideoStream(mute);
+    }
+
+    public void MuteLocalAudioStream(bool mute)
+    {
+        mRtcEngine.MuteLocalAudioStream(mute);
     }
 
     public void leave()

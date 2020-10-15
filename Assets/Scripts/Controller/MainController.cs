@@ -4,6 +4,7 @@ using UnityEngine;
 #if(UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
 using UnityEngine.Android;
 using UnityEngine.UI;
+using Zrime;
 #endif
 
 public class MainController : MonoBehaviour
@@ -24,7 +25,7 @@ public class MainController : MonoBehaviour
 #endif
     static ZStreamingController app = null;
 
-    private const string ChannelName = "unity3d";
+    private const string ChannelName = "chenzhuo";
 
 
     // PLEASE KEEP THIS App ID IN SAFE PLACE
@@ -72,11 +73,16 @@ public class MainController : MonoBehaviour
 
     #endregion
 
+    #region UI Logic
 
     public SmallView PickSmallView(uint uid)
     {
         for (int i = 0; i < m_SmallViews.Count; i++)
         {
+            if (SmallViewDic.ContainsKey(uid))
+            {
+                return SmallViewDic[uid];
+            }
             if (!m_SmallViews[i].Dirty)
             {
                 SmallViewDic.Add(uid, m_SmallViews[i]);
@@ -91,23 +97,17 @@ public class MainController : MonoBehaviour
         return null;
     }
 
-    private void joinChannel(bool useVideo = false)
-    {
-        if (ReferenceEquals(app, null))
-        {
-            app = new ZStreamingController();
-            app.loadEngine(AppID);
-        }
-        // todo Switch Channel
+    #endregion
 
-        app.leave();
-        app.join(CurChannelName, useVideo);
-    }
+
+
+    #region Clk Handler
 
     public void OnAudioBtnClk()
     {
         joinChannel(false);
     }
+
     public void OnVideoBtnClk()
     {
         joinChannel(true);
@@ -126,6 +126,52 @@ public class MainController : MonoBehaviour
             }
         }
     }
+
+    #endregion
+
+
+    #region Msg handler
+
+    public void MsgHandler(Message msg)
+    {
+        // msg.Content = msgType,executor id,
+
+        var arrs = msg.Content.Split(',');
+
+        switch (arrs[0])
+        {
+            case "join_channel":
+                if(ZClient.Instance.PlayerID == arrs[1])
+                {
+                    app.join(ChannelName);
+                }
+                break;
+
+            case "leave_channel":
+
+                break;
+
+
+            default:
+                break;
+        }
+
+    }
+
+    #endregion
+
+
+    private void joinChannel(bool useVideo = false)
+    {
+        if (ReferenceEquals(app, null))
+        {
+            app = new ZStreamingController();
+            app.loadEngine(AppID);
+        }
+        app.join(CurChannelName, useVideo);
+    }
+
+
 
 
     private void CheckAppId()

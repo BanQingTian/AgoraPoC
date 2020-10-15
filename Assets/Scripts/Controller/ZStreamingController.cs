@@ -81,36 +81,57 @@ public class ZStreamingController
         mRtcEngine.OnUserJoined = onUserJoined;
         mRtcEngine.OnUserOffline = onUserOffline;
 
-        if (useVideo)
-        {
-            // enable video
-            mRtcEngine.EnableVideo();
-            // allow camera output callback
-            mRtcEngine.EnableVideoObserver();
 
-            //startExternalVideoSource();
-        }
-        else
-        {
-            if (usingVideo)
-            {
-                SmallView sv = null;
-                if (MainController.Instance.SmallViewDic.TryGetValue(MainController.CurUid, out sv))
-                {
-                    sv.Release();
-                    MainController.Instance.SmallViewDic.Remove(MainController.CurUid);
-                }
-                mRtcEngine.DisableVideo();
-                mRtcEngine.DisableVideoObserver();
-            }
-        }
+        // enable video
+        mRtcEngine.EnableVideo();
+        // allow camera output callback
+        mRtcEngine.EnableVideoObserver();
+
+        //if (useVideo)
+        //{
+        //    // enable video
+        //    mRtcEngine.EnableVideo();
+        //    // allow camera output callback
+        //    mRtcEngine.EnableVideoObserver();
+
+        //    //startExternalVideoSource();
+        //}
+        //else
+        //{
+        //    //if (usingVideo)
+        //    {
+        //        //SmallView sv = null;
+        //        //if (MainController.Instance.SmallViewDic.TryGetValue(MainController.CurUid, out sv))
+        //        //{
+        //        //    sv.Release();
+        //        //    MainController.Instance.SmallViewDic.Remove(MainController.CurUid);
+        //        //}
+        //        mRtcEngine.DisableVideo();
+        //        mRtcEngine.DisableVideoObserver();
+        //    }
+        //}
 
         usingVideo = useVideo;
 
-        // join channel
-        mRtcEngine.JoinChannel(channel, null, 0);
 
-        Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", usingVideo));
+        if (MainController.CurUid == 0 || !MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        {
+            // join channel
+            mRtcEngine.JoinChannel(channel, null, 0);
+        }
+        else if (MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        {
+            if (!useVideo)
+            {
+                MainController.Instance.PickSmallView(MainController.CurUid).OpenAudioMode();
+            }
+            else
+            {
+                MainController.Instance.PickSmallView(MainController.CurUid).OpenVideoMode();
+            }
+        }
+
+        Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", useVideo));
     }
 
     public string getSdkVersion()
@@ -190,7 +211,7 @@ public class ZStreamingController
     private void onUserJoined(uint uid, int elapsed)
     {
         Debug.Log("[VideoStreamingController] onUserJoined:" + uid);
-        if (usingVideo)
+        // if (usingVideo)
         {
             //ViewBase view = GameObject.FindObjectOfType<ViewBase>();
             //if (view == null)

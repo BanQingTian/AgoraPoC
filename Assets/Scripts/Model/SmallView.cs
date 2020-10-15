@@ -29,13 +29,23 @@ public class SmallView : MonoBehaviour
         isDirty = true;
         m_Uid = uid;
     }
-    public void SetTexture(RenderTexture rt)
+
+    public void OpenAudioMode()
     {
-        if (ReferenceEquals(defaultTex, null))
+        VideoSurface vs = GetComponent<VideoSurface>();
+        if(vs != null)
         {
-            defaultTex = m_Image.texture;
+            vs.SetEnable(false);
         }
-        m_Image.texture = rt;
+        m_Image.texture = defaultTex;
+    }
+    public void OpenVideoMode()
+    {
+        VideoSurface vs = GetComponent<VideoSurface>();
+        if (vs != null)
+        {
+            vs.SetEnable(true);
+        }
     }
 
     public void Release()
