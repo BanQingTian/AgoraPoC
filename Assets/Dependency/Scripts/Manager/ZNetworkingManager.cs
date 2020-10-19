@@ -63,13 +63,13 @@ public class ZNetworkingManager : MonoBehaviour
     }
 
 
-    private void OnApplicationPause(bool pause)
-    {
-        if (pause)
-        {
-            ZClient.Instance.Leave();
-        }
-    }
+    //private void OnApplicationPause(bool pause)
+    //{
+    //    if (pause)
+    //    {
+    //        ZClient.Instance.Leave();
+    //    }
+    //}
 
     private void OnApplicationQuit()
     {

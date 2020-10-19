@@ -14,11 +14,11 @@ public class MainController : MonoBehaviour
 
     public static MainController Instance;
 
-    public static uint CurUid;
-    public static string CurChannelName = "chenzhuo";
+    public bool EnterChannel = false;
+    public bool UseVideo = false;
 
     public List<SmallView> m_SmallViews = new List<SmallView>();
-
+    public List<uint> m_SmallViewsUid = new List<uint>();
     public Dictionary<uint, SmallView> SmallViewDic = new Dictionary<uint, SmallView>();
 
     // Use this for initialization
@@ -91,7 +91,7 @@ public class MainController : MonoBehaviour
             if (!m_SmallViews[i].Dirty)
             {
                 SmallViewDic.Add(uid, m_SmallViews[i]);
-                CurUid = uid;
+                m_SmallViewsUid.Add(uid);
                 m_SmallViews[i].SetUid(uid);
                 m_SmallViews[i].LoadVideSurface();
                 return m_SmallViews[i];
@@ -100,6 +100,52 @@ public class MainController : MonoBehaviour
 
         Debug.Log("[CZLOG] No View Can Use");
         return null;
+    }
+
+    public void SmallViewPlayMode(bool useV)
+    {
+        //for (int i = 0; i < m_SmallViews.Count; i++)
+        //{
+        //    if (useV)
+        //    {
+        //        m_SmallViews[i].OpenVideoMode();
+        //    }
+        //    else
+        //    {
+        //        m_SmallViews[i].OpenAudioMode();
+        //    }
+        //}
+
+        foreach (var item in SmallViewDic)
+        {
+            if (useV)
+                item.Value.OpenVideoMode();
+            else
+                item.Value.OpenAudioMode();
+        }
+    }
+
+    public void RefreshSmallView()
+    {
+        Debug.Log("[CZLOG] RefreshSmallView");
+
+        for (int i = 0; i < m_SmallViews.Count; i++)
+        {
+            m_SmallViews[i].Release();
+        }
+
+        SmallViewDic.Clear();
+
+        int count = m_SmallViewsUid.Count;
+        for (int i = 0; i < count; i++)
+        {
+            var uid = m_SmallViewsUid[i];
+
+            SmallViewDic.Add(uid, m_SmallViews[i]);
+            m_SmallViews[i].SetUid(uid);
+            m_SmallViews[i].LoadVideSurface();
+        }
+
     }
 
     #endregion
@@ -135,12 +181,15 @@ public class MainController : MonoBehaviour
         if (!ReferenceEquals(app, null))
         {
             app.leave();
-            SmallView sv = null;
-            if (MainController.Instance.SmallViewDic.TryGetValue(CurUid, out sv))
+
+            foreach (var item in SmallViewDic)
             {
-                sv.Release();
-                MainController.Instance.SmallViewDic.Remove(CurUid);
+                item.Value.Release();
             }
+            SmallViewDic.Clear();
+            m_SmallViewsUid.Clear();
+
+            EnterChannel = false;
         }
     }
 

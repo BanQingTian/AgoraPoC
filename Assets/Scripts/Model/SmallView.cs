@@ -29,23 +29,30 @@ public class SmallView : MonoBehaviour
         isDirty = true;
         m_Uid = uid;
     }
+    public uint GetUid()
+    {
+        return m_Uid;
+    }
 
     public void OpenAudioMode()
     {
-        VideoSurface vs = GetComponent<VideoSurface>();
-        if(vs != null)
+        var s = Image.gameObject.GetComponent<VideoSurface>();
+        if (s != null)
         {
-            vs.SetEnable(false);
+            s.enabled = false;
+            s.SetEnable(false);
         }
         m_Image.texture = defaultTex;
     }
     public void OpenVideoMode()
     {
-        VideoSurface vs = GetComponent<VideoSurface>();
-        if (vs != null)
+        var s = Image.gameObject.GetComponent<VideoSurface>();
+        if (s != null)
         {
-            vs.SetEnable(true);
+            s.enabled = true;
+            s.SetEnable(true);
         }
+
     }
 
     public void Release()
@@ -53,21 +60,23 @@ public class SmallView : MonoBehaviour
         isDirty = false;
         m_Image.texture = defaultTex;
         m_Uid = 0;
-        Destroy(Image.gameObject.GetComponent<VideoSurface>());
+        Destroy(GetComponent<VideoSurface>());
     }
 
     public void LoadVideSurface()
     {
-        Debug.Log("onUserJoined: uid = " + m_Uid);
+        Debug.Log("[CZLOG]  LoadVideSurface: uid = " + m_Uid + "UseVideo : " + MainController.Instance.UseVideo);
 
-        VideoSurface videoSurface = Image.gameObject.AddComponent<VideoSurface>();
-        if (!ReferenceEquals(videoSurface, null))
+        var sv = Image.gameObject.AddComponent<VideoSurface>();
+        if (!ReferenceEquals(sv, null))
         {
+            sv.enabled = MainController.Instance.UseVideo;
             // configure videoSurface
-            videoSurface.SetForUser(m_Uid);
-            videoSurface.SetEnable(true);
-            videoSurface.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            videoSurface.SetGameFps(30);
+            sv.SetForUser(m_Uid);
+            sv.SetEnable(MainController.Instance.UseVideo);
+            sv.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+            sv.SetGameFps(30);
         }
+
     }
 }

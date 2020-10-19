@@ -105,7 +105,7 @@ namespace agora_gaming_rtc
                     int tmpi = videoRender.UpdateVideoRawData(uid, data, ref defWidth, ref defHeight);
 
                     if (tmpi == -1){
-                        Debug.Log ("UpdateVideoRawData: uid mm= " + uid + " textureid= " + textureid );
+                        //Debug.Log ("UpdateVideoRawData: uid mm= " + uid + " textureid= " + textureid );
                         if(textureid>0){
                             tmpi = videoRender.UpdateTexture(textureid, uid, data, ref  defWidth, ref defHeight);
                             if (tmpi == -1){
@@ -147,7 +147,7 @@ namespace agora_gaming_rtc
                         return;
                     }
 
-                     Debug.Log ("UpdateVideoRawData: 2 uid = " + uid + " width= " + width + " height= " + height);
+                     //Debug.Log ("UpdateVideoRawData: 2 uid = " + uid + " width= " + width + " height= " + height);
 
                     try
                     {

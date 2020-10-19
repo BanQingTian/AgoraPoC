@@ -17,8 +17,6 @@ public class ZStreamingController
     private IStreamingProvider mStreamingProvider;
     public Text FrameCount;
 
-    bool usingVideo = false;
-
     private void ReceiveFrame(ExternalVideoFrame frame)
     {
         if (mRtcEngine != null)
@@ -57,18 +55,18 @@ public class ZStreamingController
             return;
 
         // set callbacks (optional)
-        mRtcEngine.OnRtcStats = (RtcStats stats) =>
-        {
-            string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
-                stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
-            Debug.Log(rtcStatsMessage);
+        //mRtcEngine.OnRtcStats = (RtcStats stats) =>
+        //{
+        //    string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
+        //        stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
+        //    Debug.Log(rtcStatsMessage);
 
-            //int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
-            //int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
+        //   int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
+        //   int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
 
-            //string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
-            //Debug.Log(mixingMessage);
-        };
+        //   string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
+        //   Debug.Log(mixingMessage);
+        //};
 
         mRtcEngine.OnError += (int error, string msg) =>
         {
@@ -87,57 +85,16 @@ public class ZStreamingController
         // allow camera output callback
         mRtcEngine.EnableVideoObserver();
 
-        //if (useVideo)
-        //{
-        //    // enable video
-        //    mRtcEngine.EnableVideo();
-        //    // allow camera output callback
-        //    mRtcEngine.EnableVideoObserver();
-
-        //    //startExternalVideoSource();
-        //}
-        //else
-        //{
-        //    //if (usingVideo)
-        //    {
-        //        //SmallView sv = null;
-        //        //if (MainController.Instance.SmallViewDic.TryGetValue(MainController.CurUid, out sv))
-        //        //{
-        //        //    sv.Release();
-        //        //    MainController.Instance.SmallViewDic.Remove(MainController.CurUid);
-        //        //}
-        //        mRtcEngine.DisableVideo();
-        //        mRtcEngine.DisableVideoObserver();
-        //    }
-        //}
-
-        usingVideo = useVideo;
-
-
-        if (!MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        if (!MainController.Instance.EnterChannel)
         {
+            MainController.Instance.EnterChannel = true;
             // join channel
             mRtcEngine.JoinChannel(channel, null, 0);
         }
-        //else if (MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
-        //{
-        //    if (!useVideo)
-        //    {
-        //        MainController.Instance.PickSmallView(MainController.CurUid).OpenAudioMode();
-        //    }
-        //    else
-        //    {
-        //        MainController.Instance.PickSmallView(MainController.CurUid).OpenVideoMode();
-        //    }
-        //}
 
-        foreach (var item in MainController.Instance.SmallViewDic)
-        {
-            if (useVideo)
-                item.Value.OpenVideoMode();
-            else
-                item.Value.OpenAudioMode();
-        }
+        MainController.Instance.UseVideo = useVideo;
+
+        MainController.Instance.SmallViewPlayMode(MainController.Instance.UseVideo);
 
         Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", useVideo));
     }
@@ -224,19 +181,10 @@ public class ZStreamingController
     private void onUserJoined(uint uid, int elapsed)
     {
         Debug.Log("[VideoStreamingController] onUserJoined:" + uid);
-        // if (usingVideo)
-        {
-            //ViewBase view = GameObject.FindObjectOfType<ViewBase>();
-            //if (view == null)
-            //{
-            //    Debug.LogError("Can not find a view.");
-            //    return;
-            //}
-            //view.LoadVideSurface(uid);
+
+        SmallView sv = MainController.Instance.PickSmallView(uid);
 
 
-            SmallView sv = MainController.Instance.PickSmallView(uid);
-        }
     }
 
     // When remote user is offline, this delegate will be called. Typically
@@ -244,20 +192,13 @@ public class ZStreamingController
     private void onUserOffline(uint uid, USER_OFFLINE_REASON reason)
     {
         Debug.Log("[VideoStreamingController] onUserOffline:" + uid);
-        //ViewBase view = GameObject.FindObjectOfType<ViewBase>();
-        //if (view == null)
-        //{
-        //    Debug.LogError("Can not find a view.");
-        //    return;
-        //}
-        //view.UnloadVideoSurface(uid);
 
-        SmallView sv = null;
-        if (MainController.Instance.SmallViewDic.TryGetValue(uid, out sv))
+        if (MainController.Instance.m_SmallViewsUid.Contains(uid))
         {
-            sv.Release();
-            MainController.Instance.SmallViewDic.Remove(uid);
+            MainController.Instance.m_SmallViewsUid.Remove(uid);
         }
+
+        MainController.Instance.RefreshSmallView();
     }
 
     public void onSwitchCamera()
