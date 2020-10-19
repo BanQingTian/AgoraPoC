@@ -146,6 +146,22 @@ public class MainController : MonoBehaviour
             m_SmallViews[i].LoadVideSurface();
         }
 
+        //SmallViewDic.Clear();
+        //int count = m_SmallViewsUid.Count;
+        //for (int i = 0; i < m_SmallViews.Count; i++)
+        //{
+        //    if (i < count)
+        //    {
+        //        SmallViewDic.Add(m_SmallViewsUid[i], m_SmallViews[i]);
+        //        m_SmallViews[i].SetUid(m_SmallViewsUid[i]);
+        //        m_SmallViews[i].LoadVideSurface();
+        //    }
+        //    else
+        //    {
+        //        m_SmallViews[i].Release();
+        //    }
+        //}
+
     }
 
     #endregion
@@ -238,20 +254,30 @@ public class MainController : MonoBehaviour
 
             // 发言ing
             case "open_speaking":
-                if (ZClient.Instance.PlayerID != msg.PlayerId)
+                if (ZClient.Instance.PlayerID == msg.PlayerId)
                 {
-                    app.MuteLocalAudioStream(true);
+                    app.MuteLocalAudioStream(false);
                     SomeOneIsSpeaking = true;
                 }
                 break;
 
             // 结束发言
             case "close_speaking":
-                if (ZClient.Instance.PlayerID != msg.PlayerId)
+                if (ZClient.Instance.PlayerID == msg.PlayerId)
                 {
-                    app.MuteLocalAudioStream(false);
+                    app.MuteLocalAudioStream(true);
                     SomeOneIsSpeaking = false;
                 }
+                break;
+
+            // 全部打开麦克风
+            case "open_all_local_voice":
+                app.MuteLocalAudioStream(false);
+                break;
+
+            // 全部关闭麦克风
+            case "mute_all_local_voice":
+                app.MuteLocalAudioStream(true);
                 break;
 
             default:

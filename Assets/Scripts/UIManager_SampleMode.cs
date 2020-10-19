@@ -15,16 +15,10 @@ public class UIManager_SampleMode : MonoBehaviour
         Instance = this;
     }
 
-    private void Update()
+    private void Start()
     {
-        if (Input.GetKeyDown(KeyCode.F))
-        {
-            //ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "join_channel", ZClient.Instance.PlayerID));
-
-            
-        }
+        smcp_RegisterBtnEvent();
     }
-
 
     public void smcp_RegisterBtnEvent()
     {

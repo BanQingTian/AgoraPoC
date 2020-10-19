@@ -78,6 +78,7 @@ public class LeftConnectionPanel : MonoBehaviour
     public void SwitchToAuido()
     {
         MainController.Instance.OnAudioBtnClk();
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "mute_all_local_voice", "shelter"));
         AudioMode.SetActive(true);
         VideoMode.SetActive(false);
         SwitchMode.SetActive(false);
@@ -85,6 +86,7 @@ public class LeftConnectionPanel : MonoBehaviour
     public void SwitchToVideo()
     {
         MainController.Instance.OnVideoBtnClk();
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_all_local_voice", "shelter"));
         AudioMode.SetActive(false);
         VideoMode.SetActive(true);
         SwitchMode.SetActive(false);
