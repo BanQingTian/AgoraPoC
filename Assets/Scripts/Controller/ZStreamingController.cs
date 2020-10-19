@@ -114,21 +114,29 @@ public class ZStreamingController
         usingVideo = useVideo;
 
 
-        if (MainController.CurUid == 0 || !MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        if (!MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
         {
             // join channel
             mRtcEngine.JoinChannel(channel, null, 0);
         }
-        else if (MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        //else if (MainController.Instance.SmallViewDic.ContainsKey(MainController.CurUid))
+        //{
+        //    if (!useVideo)
+        //    {
+        //        MainController.Instance.PickSmallView(MainController.CurUid).OpenAudioMode();
+        //    }
+        //    else
+        //    {
+        //        MainController.Instance.PickSmallView(MainController.CurUid).OpenVideoMode();
+        //    }
+        //}
+
+        foreach (var item in MainController.Instance.SmallViewDic)
         {
-            if (!useVideo)
-            {
-                MainController.Instance.PickSmallView(MainController.CurUid).OpenAudioMode();
-            }
+            if (useVideo)
+                item.Value.OpenVideoMode();
             else
-            {
-                MainController.Instance.PickSmallView(MainController.CurUid).OpenVideoMode();
-            }
+                item.Value.OpenAudioMode();
         }
 
         Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", useVideo));
@@ -152,6 +160,11 @@ public class ZStreamingController
         mRtcEngine.LeaveChannel();
         // deregister video frame observers in native-c code
         mRtcEngine.DisableVideoObserver();
+    }
+
+    public void MuteLocalAudioStream(bool mute)
+    {
+        mRtcEngine.MuteLocalAudioStream(mute);
     }
 
     // unload agora engine
@@ -249,7 +262,6 @@ public class ZStreamingController
 
     public void onSwitchCamera()
     {
-        Debug.Log("onSwitchCamera ");
         bool find_RGB = false;
         if (mRtcEngine != null)
         {

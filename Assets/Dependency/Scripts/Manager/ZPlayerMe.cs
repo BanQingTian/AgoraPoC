@@ -31,13 +31,12 @@ public class ZPlayerMe
     public void AddPlayer(string playerId, Entity en)
     {
         Entity outEn;
-        if(!PlayerMap.TryGetValue(playerId, out outEn))
+        if (!PlayerMap.TryGetValue(playerId, out outEn))
         {
             PlayerMap[playerId] = en;
             PlayerKeys.Add(playerId);
             PlayerReadyDic.Add(playerId, false);
 
-            UIManager.Instance.UpdateCallerPanel(playerId);
         }
         else
         {
@@ -60,7 +59,7 @@ public class ZPlayerMe
     public void RemovePlayer(string id)
     {
         Entity en;
-        if(PlayerMap.TryGetValue(id, out en))
+        if (PlayerMap.TryGetValue(id, out en))
         {
             GameObject.Destroy(PlayerMap[id].gameObject);
             Debug.LogError("Dostroy player id : " + id);
@@ -68,11 +67,12 @@ public class ZPlayerMe
             PlayerKeys.Remove(id);
             PlayerReadyDic.Remove(id);
 
-            UIManager.Instance.UpdateCallerPanel(id,false);
+            if (UIManager.Instance != null)
+                UIManager.Instance.UpdateCallerPanel(id, false);
         }
         else
         {
-            
+
         }
     }
 }

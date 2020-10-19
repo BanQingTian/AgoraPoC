@@ -81,6 +81,8 @@ public class ZMessageManager
 
         ZPlayerMe.Instance.AddPlayer(player.PlayerId, pe);
 
+        if (UIManager.Instance != null)
+            UIManager.Instance.UpdateCallerPanel(player.PlayerId, true);
         // update ui === todo
     }
 
@@ -99,7 +101,7 @@ public class ZMessageManager
         Message m = msg as Message;
         Debug.Log(m.Content);
         var arrs = m.Content.Split(',');
-       // GameManager.Instance.__Func_Ready(arrs[0], arrs[1]);
+        // GameManager.Instance.__Func_Ready(arrs[0], arrs[1]);
     }
 
     #endregion

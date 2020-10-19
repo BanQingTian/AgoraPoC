@@ -10,10 +10,12 @@ using Zrime;
 public class MainController : MonoBehaviour
 {
 
+    public Text TOO;
+
     public static MainController Instance;
 
     public static uint CurUid;
-    public static string CurChannelName;
+    public static string CurChannelName = "chenzhuo";
 
     public List<SmallView> m_SmallViews = new List<SmallView>();
 
@@ -26,6 +28,8 @@ public class MainController : MonoBehaviour
     static ZStreamingController app = null;
 
     private const string ChannelName = "chenzhuo";
+
+    public bool SomeOneIsSpeaking = false;
 
 
     // PLEASE KEEP THIS App ID IN SAFE PLACE
@@ -53,6 +57,7 @@ public class MainController : MonoBehaviour
         CheckPermissions();
 
         CheckAppId();
+
     }
 
     void OnApplicationPause(bool paused)
@@ -103,6 +108,18 @@ public class MainController : MonoBehaviour
 
     #region Clk Handler
 
+    public void OnSwitchCameraBtnClk()
+    {
+        Debug.Log("OnSwitchCameraBtnClk");
+        app.onSwitchCamera();
+    }
+
+    public void OnMuteAudioBtnClk(bool mute)
+    {
+        Debug.Log(mute);
+        app.MuteLocalAudioStream(mute);
+    }
+
     public void OnAudioBtnClk()
     {
         joinChannel(false);
@@ -137,20 +154,56 @@ public class MainController : MonoBehaviour
         // msg.Content = msgType,executor id,
 
         var arrs = msg.Content.Split(',');
-
+        if (TOO != null)
+        {
+            TOO.text = arrs[0] + "\n";
+            TOO.text += ZClient.Instance.PlayerID + "\n";
+            TOO.text += arrs[1];
+        }
         switch (arrs[0])
         {
+            // 加入频道
             case "join_channel":
-                if(ZClient.Instance.PlayerID == arrs[1])
+                if (ZClient.Instance.PlayerID == arrs[1])
                 {
-                    app.join(ChannelName);
+                    OnVideoBtnClk();
                 }
                 break;
 
+            // 离开频道
             case "leave_channel":
-
+                if (ZClient.Instance.PlayerID == arrs[1])
+                {
+                    OnLeaveBtnClk();
+                }
                 break;
 
+            case "leave_channel_pass_sample_mode":
+                {
+                    if (ZMain.Instance.isMaster)
+                    {
+                        UIManager.Instance.LeftConPanel.RemoveCallerToWaitingList(msg.PlayerId);
+                    }
+                }
+                break;
+
+            // 发言ing
+            case "open_speaking":
+                if (ZClient.Instance.PlayerID != msg.PlayerId)
+                {
+                    app.MuteLocalAudioStream(true);
+                    SomeOneIsSpeaking = true;
+                }
+                break;
+
+            // 结束发言
+            case "close_speaking":
+                if (ZClient.Instance.PlayerID != msg.PlayerId)
+                {
+                    app.MuteLocalAudioStream(false);
+                    SomeOneIsSpeaking = false;
+                }
+                break;
 
             default:
                 break;
@@ -161,14 +214,14 @@ public class MainController : MonoBehaviour
     #endregion
 
 
-    private void joinChannel(bool useVideo = false)
+    private void joinChannel(bool useVideo = true)
     {
         if (ReferenceEquals(app, null))
         {
             app = new ZStreamingController();
             app.loadEngine(AppID);
         }
-        app.join(CurChannelName, useVideo);
+        app.join(ChannelName, useVideo);
     }
 
 

@@ -6,6 +6,10 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    [Space(12)]
+    public bool SampleMode = false;
+
+    [Space(12)]
     public LeftConnectionPanel LeftConPanel;
     public CallerPanel CallerP;
 
@@ -18,12 +22,9 @@ public class UIManager : MonoBehaviour
     }
 
 
-
-
-
     #region Logic
 
-    public void UpdateCallerPanel(string playerid,bool add = true)
+    public void UpdateCallerPanel(string playerid, bool add = true)
     {
         if (add)
         {
@@ -31,10 +32,16 @@ public class UIManager : MonoBehaviour
         }
         else
         {
-            CallerP.RemoveCallerFromWaitingList(playerid);
+            DeleteCaller(playerid);
         }
     }
 
+
+    public void DeleteCaller(string playerid)
+    {
+        CallerP.DeleteCaller(playerid);
+        LeftConPanel.DeleteCaller(playerid);
+    }
 
     #endregion
 

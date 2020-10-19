@@ -5,7 +5,8 @@ using NRKernal;
 
 public class ZMain : MonoBehaviour
 {
-    [HideInInspector]
+    public static ZMain Instance;
+
     public bool isMaster = true;
 
     [Space(12)]
@@ -16,6 +17,11 @@ public class ZMain : MonoBehaviour
 
     [Space(12)]
     public string IPAdress = "127.0.0.1";
+
+    private void Awake()
+    {
+        Instance = this;
+    }
 
     void Start()
     {
@@ -67,7 +73,7 @@ public class ZMain : MonoBehaviour
         }
         else
         {
-
+            ZClient.Instance.Model = new GameObject("PlayerX");
         }
     }
 

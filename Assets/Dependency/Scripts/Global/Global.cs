@@ -9,7 +9,7 @@ public static class Global
 
     public static DeviceTypeEnum DeviceType = DeviceTypeEnum.NRLight;
 
-    public const float FrameRate = 30;
+    public const float FrameRate = 15;
 
 
     public static string GetName()

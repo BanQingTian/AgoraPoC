@@ -2,7 +2,8 @@
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using UnityEngine;
-#if(UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
+using Zrime;
+#if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
 using UnityEngine.Android;
 #endif
 using agora_gaming_rtc;
@@ -12,6 +13,8 @@ using agora_gaming_rtc;
 /// </summary>
 public class HomePage : MonoBehaviour
 {
+    public static HomePage Instance;
+
     // Use this for initialization
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
     private ArrayList permissionList = new ArrayList();
@@ -30,8 +33,12 @@ public class HomePage : MonoBehaviour
     [SerializeField]
     private string AppID = "your_appid";
 
+    public const string ChannelName = "chenzhuo";
+
     void Awake()
     {
+        Instance = this;
+
         Application.targetFrameRate = 60;
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
         permissionList.Add(Permission.Microphone);
@@ -54,11 +61,6 @@ public class HomePage : MonoBehaviour
         CheckAppId();
 
         //this.onJoinButtonClicked();
-    }
-
-    void Update()
-    {
-        
     }
 
     private void CheckAppId()
@@ -172,4 +174,37 @@ public class HomePage : MonoBehaviour
             app.unloadEngine();
         }
     }
+
+    #region Msg handler
+
+    public void MsgHandler(Message msg)
+    {
+        // msg.Content = msgType,executor id,
+
+        var arrs = msg.Content.Split(',');
+
+        switch (arrs[0])
+        {
+            case "join_channel":
+                if (ZClient.Instance.PlayerID == arrs[1])
+                {
+                    app.join(ChannelName);
+                }
+                break;
+
+            case "leave_channel":
+                if (ZClient.Instance.PlayerID == arrs[1])
+                {
+                    app.leave();
+                }
+                break;
+
+            default:
+                break;
+        }
+
+    }
+
+    #endregion
+
 }

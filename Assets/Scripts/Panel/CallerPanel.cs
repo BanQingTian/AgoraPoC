@@ -13,11 +13,15 @@ public class CallerPanel : MonoBehaviour
     // 上线但没有在频道里列表
     public void CreateCallerToWaitingList(string playerid)
     {
+        Debug.Log("[CZLOG] player id is ---" + playerid);
+
         var item = GameObject.Instantiate<CallerDetailItem>(ItemPrefab);
 
         item.transform.SetParent(DetailLayoutParent);
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale = Vector3.one;
+        item.transform.localPosition = new Vector3(item.transform.localPosition.x, item.transform.localPosition.y, 0);
+
         item.gameObject.SetActive(true);
 
         // save data
@@ -26,6 +30,20 @@ public class CallerPanel : MonoBehaviour
         CallerDic.Add(playerid, item);
     }
 
+    // caller offline
+    public void DeleteCaller(string playerid)
+    {
+        CallerDetailItem ci;
+        if (CallerDic.TryGetValue(playerid, out ci))
+        {
+            CallerDic.Remove(playerid);
+            Destroy(ci.gameObject);
+        }
+        else
+        {
+            Debug.LogError("[CZLOG] Don't contain this player id ---" + playerid);
+        }
+    }
 
     public void RemoveCallerFromWaitingList(string playerid)
     {
@@ -46,19 +64,11 @@ public class CallerPanel : MonoBehaviour
     public void MoveCallerToChannel(CallerDetailItem cdi)
     {
         LeftConPanel.AddCallerToList(cdi.PlayerId);
-        CallerDetailItem ci;
-        if (CallerDic.TryGetValue(cdi.PlayerId, out ci))
-        {
-            CallerDic.Remove(cdi.PlayerId);
-            Destroy(cdi.gameObject);
-        }
-        else
-        {
-            Debug.LogError("[CZLOG] Don't contain this player id ---" + cdi.PlayerId);
-        }
+
+        DeleteCaller(cdi.PlayerId);
     }
 
-    public void HideSelf()
+    public void HideSelf() // btn clk
     {
         gameObject.SetActive(false);
     }

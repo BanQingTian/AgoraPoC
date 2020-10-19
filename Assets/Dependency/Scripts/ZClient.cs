@@ -146,7 +146,7 @@ public class ZClient
         ZNetworkingManager.Instance.CreateOwner(m_PlayerID, m_IsHouseOwner);
 
         // don't need Sync !
-        //ClientUpdator.Instance.StartCoroutine(SyncPoseCor());
+        ClientUpdator.Instance.StartCoroutine(SyncPoseCor());
 
     }
 
