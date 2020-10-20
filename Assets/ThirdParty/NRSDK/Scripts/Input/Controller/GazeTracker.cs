@@ -20,7 +20,7 @@ namespace NRKernal
         private NRPointerRaycaster m_Raycaster;
         private bool m_IsEnabled;
 
-        private Transform CameraCenter
+        public Transform CameraCenter
         {
             get
             {

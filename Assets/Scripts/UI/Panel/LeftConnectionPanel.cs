@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using UnityEngine;
 using Zrime;
 
-public class LeftConnectionPanel : MonoBehaviour
+public class LeftConnectionPanel : ZBasePanel
 {
+    [Space(24)]
     public CallerPanel CallerP;
 
     public Transform IconLayoutParent;

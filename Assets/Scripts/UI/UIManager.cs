@@ -1,19 +1,20 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NRKernal;
 
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
-    [Space(12)]
-    public bool SampleMode = false;
+    // 用于注册模拟鼠标
+    public GazeTracker VirturlMouseHelper;
 
     [Space(12)]
     public LeftConnectionPanel LeftConPanel;
     public CallerPanel CallerP;
 
-
+    public Transform Point;
 
 
     private void Awake()

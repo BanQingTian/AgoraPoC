@@ -10,11 +10,7 @@ public class MapPanel : MonoBehaviour
 
     private bool m_Moving = false;
 
-    private IEnumerator Start()
-    {
-        yield return new WaitForSeconds(1);
-        TweenTest();
-    }
+
     public void TweenTest()
     {
         transform.DOScale(2, 1);
