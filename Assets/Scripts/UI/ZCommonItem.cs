@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
+using DG.Tweening;
+using NRKernal;
 
 public delegate void ZCommonEventHandler();
 public enum HoverMode
@@ -15,6 +17,10 @@ public enum HoverMode
     /// 替换出现
     /// </summary>
     Replace,
+    /// <summary>
+    /// 动画
+    /// </summary>
+    Animation,
 }
 
 public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
@@ -24,9 +30,9 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public ZCommonEventHandler OnZCommonItemEnter;
     public ZCommonEventHandler OnZCommonItemExit;
 
+
     public static GameObject CurGO;
     public bool isHovering = false;
-
 
 
     public HoverMode Mode = HoverMode.Replace;
@@ -35,7 +41,22 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public Image HoverImage;
     public Image PressedImage;
 
-    
+
+    [Space(12), Header("缩放比例"), Range(0, 2)]
+    public float HoveringScaleValue = 1.5f;
+    [Space(12), Range(0, 2)]
+    public float PressScaleValue = 0.7f;
+    [Space(12), Header("缩放时间"),Range(0, 1)]
+    public float HoverScaleBackDuration = 0.7f;
+    public float PressScaleBackDuration = 0.5f;
+
+    private bool m_InitDefaultScale = false;
+    // 默认比例
+    private float defaultScaleValue;
+
+
+    #region IPoint Handler
+
 
     public void OnPointerDown(PointerEventData eventData)
     {
@@ -45,12 +66,16 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerUp(PointerEventData eventData)
     {
         OnZCommonItemUp?.Invoke();
+        if (PressedImage != null)
+        {
+            PressedImage.enabled = true;
+        }
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
         OnZCommonItemEnter?.Invoke();
-        CurGO = gameObject;
+        //CurGO = gameObject;
         isHovering = true;
         enterLogic();
     }
@@ -60,6 +85,23 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         OnZCommonItemExit?.Invoke();
         isHovering = false;
         exitLogic();
+
+    }
+
+
+    #endregion
+
+    private void InitAnimation()
+    {
+        if (!m_InitDefaultScale)
+        {
+            if (NormalImage == null)
+            {
+                Debug.LogError("[CZLOG] NormalImage Null !!");
+            }
+            m_InitDefaultScale = true;
+            defaultScaleValue = NormalImage.rectTransform.localScale.x;
+        }
     }
 
     public void enterLogic()
@@ -76,6 +118,11 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     NormalImage.enabled = false;
                 if (HoverImage != null)
                     HoverImage.enabled = true;
+                break;
+
+            case HoverMode.Animation:
+                InitAnimation();
+                NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration);
                 break;
         }
     }
@@ -95,14 +142,19 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 if (HoverImage != null)
                     HoverImage.enabled = false;
                 break;
+
+            case HoverMode.Animation:
+                InitAnimation();
+                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration-0.2f);
+                break;
         }
     }
 
-    private void Update()
-    {
-        if (!isHovering || CurGO != gameObject)
-        {
-            exitLogic();
-        }
-    }
+    //private void Update()
+    //{
+    //    if (!isHovering || CurGO != gameObject)
+    //    {
+    //        exitLogic();
+    //    }
+    //}
 }
