@@ -7,6 +7,9 @@ public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
 
+    //[HideInInspector]
+    //public bool BtnHovering = false;
+
     // 用于注册模拟鼠标
     public GazeTracker VirturlMouseHelper;
 
@@ -24,9 +27,17 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        LeftConPanel.RegisterSampleBtn();
+        init();
+        LeftConPanel.AddListener();
+        CallerP.AddListener();
     }
 
+
+    private void init()
+    {
+        // 移除手柄原因的模型
+        NRInput.ControllerVisualActive = false;
+    }
 
     #region Logic
 

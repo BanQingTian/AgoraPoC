@@ -21,6 +21,10 @@ public enum HoverMode
     /// 动画
     /// </summary>
     Animation,
+    /// <summary>
+    /// 动画加hover图标出现
+    /// </summary>
+    AnimationAndExtra,
 }
 
 public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
@@ -30,10 +34,10 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public ZCommonEventHandler OnZCommonItemEnter;
     public ZCommonEventHandler OnZCommonItemExit;
 
-
-    public static GameObject CurGO;
     public bool isHovering = false;
+    public bool isDowning = false; // 为了防止点中之后移动到button之外再回来，还会执行按钮的up函数
 
+    public static bool BtnHovering = false;
 
     public HoverMode Mode = HoverMode.Replace;
 
@@ -42,13 +46,12 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public Image PressedImage;
 
 
-    [Space(12), Header("缩放比例"), Range(0, 2)]
-    public float HoveringScaleValue = 1.5f;
-    [Space(12), Range(0, 2)]
-    public float PressScaleValue = 0.7f;
-    [Space(12), Header("缩放时间"),Range(0, 1)]
-    public float HoverScaleBackDuration = 0.7f;
-    public float PressScaleBackDuration = 0.5f;
+    // 缩放比例
+    private float HoveringScaleValue = 1.1f;
+    private float PressScaleValue = 0.91f;
+    // 缩放时间
+    private float HoverScaleBackDuration = 0.2f;
+    private float PressScaleBackDuration = 0.2f;
 
     private bool m_InitDefaultScale = false;
     // 默认比例
@@ -57,35 +60,36 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     #region IPoint Handler
 
-
     public void OnPointerDown(PointerEventData eventData)
     {
         OnZCommonItemDown?.Invoke();
+        NormalImage.rectTransform.DOScale(PressScaleValue, PressScaleBackDuration);
+        isDowning = true;
     }
 
     public void OnPointerUp(PointerEventData eventData)
     {
-        OnZCommonItemUp?.Invoke();
+        if (isHovering && isDowning)
+        {
+            OnZCommonItemUp?.Invoke();
+        }
         if (PressedImage != null)
         {
             PressedImage.enabled = true;
         }
+        isDowning = false;
+        BtnHovering = false;
+        NormalImage.rectTransform.DOScale(defaultScaleValue, PressScaleBackDuration);
     }
 
     public void OnPointerEnter(PointerEventData eventData)
     {
-        OnZCommonItemEnter?.Invoke();
-        //CurGO = gameObject;
-        isHovering = true;
         enterLogic();
     }
 
     public void OnPointerExit(PointerEventData eventData)
     {
-        OnZCommonItemExit?.Invoke();
-        isHovering = false;
         exitLogic();
-
     }
 
 
@@ -104,57 +108,82 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
-    public void enterLogic()
+    public virtual void enterLogic()
     {
+        OnZCommonItemEnter?.Invoke();
+        hoverTime = 0;
+        isHovering = true;
+        BtnHovering = true;
+
         switch (Mode)
         {
             case HoverMode.Extra:
                 if (HoverImage != null)
-                    HoverImage.enabled = true;
+                    HoverImage.gameObject.SetActive(true);
                 break;
 
             case HoverMode.Replace:
                 if (NormalImage != null)
-                    NormalImage.enabled = false;
+                    NormalImage.gameObject.SetActive(false);
                 if (HoverImage != null)
-                    HoverImage.enabled = true;
+                    HoverImage.gameObject.SetActive(true);
                 break;
 
             case HoverMode.Animation:
                 InitAnimation();
                 NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration);
                 break;
+
+            case HoverMode.AnimationAndExtra:
+                InitAnimation();
+                NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration);
+                if (HoverImage != null)
+                    HoverImage.gameObject.SetActive(true);
+                break;
         }
     }
 
-    private void exitLogic()
+    public virtual void exitLogic()
     {
+        OnZCommonItemExit?.Invoke();
+        isHovering = false;
+        BtnHovering = false;
+        isDowning = false;
+
         switch (Mode)
         {
             case HoverMode.Extra:
                 if (HoverImage != null)
-                    HoverImage.enabled = false;
+                    HoverImage.gameObject.SetActive(false);
                 break;
 
             case HoverMode.Replace:
                 if (NormalImage != null)
-                    NormalImage.enabled = true;
+                    NormalImage.gameObject.SetActive(true);
                 if (HoverImage != null)
-                    HoverImage.enabled = false;
+                    HoverImage.gameObject.SetActive(false);
                 break;
 
             case HoverMode.Animation:
                 InitAnimation();
-                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration-0.2f);
+                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration);
+                break;
+
+            case HoverMode.AnimationAndExtra:
+                InitAnimation();
+                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration);
+                if (HoverImage != null)
+                    HoverImage.gameObject.SetActive(false);
                 break;
         }
     }
 
-    //private void Update()
-    //{
-    //    if (!isHovering || CurGO != gameObject)
-    //    {
-    //        exitLogic();
-    //    }
-    //}
+    float hoverTime;
+    private void Update()
+    {
+        if (isHovering)
+        {
+            hoverTime += Time.deltaTime;
+        }
+    }
 }

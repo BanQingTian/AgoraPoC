@@ -5,9 +5,18 @@ using UnityEngine;
 public class IconItemLeft : MonoBehaviour
 {
     public LeftConnectionPanel Panel;
+
+    public ZUIButton Btn;
+
     public string PlayerId { get; set; }
 
-    public void RemoveCallerToWaitingList()
+
+    public void AddListener()
+    {
+        Btn.OnZCommonItemUp += RemoveCallerToWaitingList;
+    }
+
+    private void RemoveCallerToWaitingList()
     {
         Debug.Log("RemoveCallerToWaitingList");
 

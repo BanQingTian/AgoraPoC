@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 
-public class MapPanel : MonoBehaviour
+public class MapPanel : ZBasePanel
 {
+
+    [Space(24)]
     public float m_Speed = 1;
     public RectTransform MapBg;
 

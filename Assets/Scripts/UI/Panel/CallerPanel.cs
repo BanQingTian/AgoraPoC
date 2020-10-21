@@ -2,13 +2,21 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class CallerPanel : MonoBehaviour
+public class CallerPanel : ZBasePanel
 {
+    [Space(24)]
     public LeftConnectionPanel LeftConPanel;
 
     public Transform DetailLayoutParent;
     public CallerDetailItem ItemPrefab;
     public Dictionary<string, CallerDetailItem> CallerDic = new Dictionary<string, CallerDetailItem>();
+
+    public ZUIButton BackBtn;
+
+    public void AddListener()
+    {
+        BackBtn.OnZCommonItemUp += Back;
+    }
 
     // 上线但没有在频道里列表
     public void CreateCallerToWaitingList(string playerid)
@@ -16,7 +24,7 @@ public class CallerPanel : MonoBehaviour
         Debug.Log("[CZLOG] player id is ---" + playerid);
 
         var item = GameObject.Instantiate<CallerDetailItem>(ItemPrefab);
-
+        item.AddListener();
         item.transform.SetParent(DetailLayoutParent);
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale = Vector3.one;
@@ -68,9 +76,10 @@ public class CallerPanel : MonoBehaviour
         DeleteCaller(cdi.PlayerId);
     }
 
-    public void HideSelf() // btn clk
+    public void Back() // btn clk
     {
         gameObject.SetActive(false);
+        LeftConPanel.gameObject.SetActive(true);
     }
 
 }

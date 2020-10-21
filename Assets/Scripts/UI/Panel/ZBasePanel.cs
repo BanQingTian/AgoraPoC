@@ -22,6 +22,11 @@ public class ZBasePanel : MonoBehaviour
     /// </summary>
     [SerializeField, Header("模拟鼠标图标")]
     private RectTransform m_VirtualMouse;
+    [SerializeField]
+    private RectTransform m_MouseHover;
+
+    [SerializeField, Header("模拟鼠标移动区域")]
+    private RectTransform m_RangeImage;
 
     private bool m_Hovering = false;
 
@@ -37,6 +42,7 @@ public class ZBasePanel : MonoBehaviour
     private void Start()
     {
         initMouseRange();
+        initMouseColor();
     }
 
     private void initMouseRange()
@@ -47,13 +53,20 @@ public class ZBasePanel : MonoBehaviour
             return;
         }
 
-        float centerX = m_HoverExtraImage.rectTransform.position.x;
-        float centerY = m_HoverExtraImage.rectTransform.position.y;
-        float width = m_HoverExtraImage.rectTransform.sizeDelta.x;
-        float height = m_HoverExtraImage.rectTransform.sizeDelta.y;
+        float centerX = m_RangeImage.position.x;
+        float centerY = m_RangeImage.position.y;
+        float width = m_RangeImage.sizeDelta.x;
+        float height = m_RangeImage.sizeDelta.y;
 
         rangeX = new Vector2(centerX - width / 2, centerX + width / 2);
         rangeY = new Vector2(centerY - height / 2, centerY + height / 2);
+    }
+
+    private void initMouseColor()
+    {
+        Color c = new Color(0f, 1f, 0.8f, 1);
+        m_VirtualMouse.GetComponent<Image>().color = c;
+        m_MouseHover.GetComponent<Image>().color = c;
 
     }
 
@@ -95,11 +108,10 @@ public class ZBasePanel : MonoBehaviour
     public virtual void MouseMove()
     {
         Vector2 curPos = NRInput.GetTouch();
-        Debug.Log(curPos);
         if (curPos.x != 0 || curPos.y != 0)
         {
             Vector2 moved = lastPos == Vector2.zero ? Vector2.zero : curPos - lastPos;
-            m_VirtualMouse.localPosition += new Vector3(moved.x, moved.y) * 20;
+            m_VirtualMouse.localPosition += new Vector3(moved.x, moved.y) * 50;
             lastPos = curPos;
         }
         else
@@ -118,6 +130,7 @@ public class ZBasePanel : MonoBehaviour
         if (m_Hovering)
         {
             MouseMove();
+            m_MouseHover.gameObject.SetActive(ZCommonItem.BtnHovering);
         }
     }
 }
