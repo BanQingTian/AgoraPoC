@@ -20,9 +20,19 @@ public class UIManager_SampleMode : MonoBehaviour
         smcp_RegisterBtnEvent();
     }
 
+    public void OpenAudioModeUI()
+    {
+        smcp.OpenAudioModeUI();
+    }
+
+    public void OpenVideoModeUI()
+    {
+        smcp.OpenVideoModeUI();
+    }
+
     public void smcp_RegisterBtnEvent()
     {
-        smcp.RegisterSampleBtn();
+        smcp.AddListener();
     }
 
 }

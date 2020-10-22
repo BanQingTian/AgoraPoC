@@ -125,6 +125,17 @@ public class MainController : MonoBehaviour
         }
     }
 
+    public void Refresh2(uint uid)
+    {
+        for (int i = 0; i < m_SmallViews.Count; i++)
+        {
+            if (m_SmallViews[i].GetUid() == uid)
+            {
+                m_SmallViews[i].Release();
+                break;
+            }
+        }
+    }
     public void RefreshSmallView()
     {
         Debug.Log("[CZLOG] RefreshSmallView");
@@ -145,6 +156,10 @@ public class MainController : MonoBehaviour
             m_SmallViews[i].SetUid(uid);
             m_SmallViews[i].LoadVideSurface();
         }
+
+
+
+        //-------
 
         //SmallViewDic.Clear();
         //int count = m_SmallViewsUid.Count;
@@ -185,11 +200,13 @@ public class MainController : MonoBehaviour
     public void OnAudioBtnClk()
     {
         joinChannel(false);
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "audio_mode", "shelter"));
     }
 
     public void OnVideoBtnClk()
     {
         joinChannel(true);
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "video_mode", "shelter"));
     }
 
     public void OnLeaveBtnClk()
@@ -278,6 +295,20 @@ public class MainController : MonoBehaviour
             // 全部关闭麦克风
             case "mute_all_local_voice":
                 app.MuteLocalAudioStream(true);
+                break;
+
+            case "audio_mode": // for sample mode
+                if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
+                {
+                    UIManager_SampleMode.Instance.OpenAudioModeUI();
+                }
+                break;
+
+            case "video_mode": // for sample mode
+                if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
+                {
+                    UIManager_SampleMode.Instance.OpenVideoModeUI();
+                }
                 break;
 
             default:

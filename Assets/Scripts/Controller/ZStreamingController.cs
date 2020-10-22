@@ -198,7 +198,8 @@ public class ZStreamingController
             MainController.Instance.m_SmallViewsUid.Remove(uid);
         }
 
-        MainController.Instance.RefreshSmallView();
+        //MainController.Instance.RefreshSmallView();
+        MainController.Instance.Refresh2(uid);
     }
 
     public void onSwitchCamera()

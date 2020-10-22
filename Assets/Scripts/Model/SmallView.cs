@@ -28,6 +28,7 @@ public class SmallView : MonoBehaviour
     {
         isDirty = true;
         m_Uid = uid;
+        gameObject.SetActive(true);
     }
     public uint GetUid()
     {
@@ -61,6 +62,12 @@ public class SmallView : MonoBehaviour
         m_Image.texture = defaultTex;
         m_Uid = 0;
         Destroy(GetComponent<VideoSurface>());
+        m_Image.transform.SetAsLastSibling();
+
+        MainController.Instance.m_SmallViews.Remove(this);
+        MainController.Instance.m_SmallViews.Add(this);
+
+        //gameObject.SetActive(false);
     }
 
     public void LoadVideSurface()

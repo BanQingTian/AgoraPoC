@@ -51,6 +51,13 @@ public class SmallPoint : MonoBehaviour
     private void ShowDetailView()
     {
         Btns.gameObject.SetActive(true);
+        foreach (var item in UIManager.Instance.MapP.CallerMapUsedDic)
+        {
+            if (item.Key != PlayerId)
+            {
+                item.Value.Btns.gameObject.SetActive(false);
+            }
+        }
     }
 
 
