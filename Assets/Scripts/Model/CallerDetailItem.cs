@@ -48,9 +48,7 @@ public class CallerDetailItem : MonoBehaviour
 
     public void MoveToChannel_BtnClked()
     {
-        // 告诉caller加入频道
-        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "join_channel", PlayerId));
-        ParentsPanel.MoveCallerToChannel(this);
+        ParentsPanel.MoveCallerToChannel(PlayerId);
         //ParentsPanel.gameObject.SetActive(false);
     }
 }

@@ -64,6 +64,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     {
         OnZCommonItemDown?.Invoke();
         NormalImage.rectTransform.DOScale(PressScaleValue, PressScaleBackDuration);
+        GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayForward();
         isDowning = true;
     }
 
@@ -79,7 +80,10 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
         isDowning = false;
         BtnHovering = false;
-        NormalImage.rectTransform.DOScale(defaultScaleValue, PressScaleBackDuration);
+        //NormalImage.rectTransform.DOScale(defaultScaleValue, PressScaleBackDuration);
+
+        GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayBackwards();
+
     }
 
     public void OnPointerEnter(PointerEventData eventData)
@@ -131,12 +135,12 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
             case HoverMode.Animation:
                 InitAnimation();
-                NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration);
+                GetScaleTween(HoveringScaleValue, HoverScaleBackDuration).PlayForward();
                 break;
 
             case HoverMode.AnimationAndExtra:
                 InitAnimation();
-                NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration);
+                GetScaleTween(HoveringScaleValue, HoverScaleBackDuration).PlayForward();
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(true);
                 break;
@@ -166,12 +170,12 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
             case HoverMode.Animation:
                 InitAnimation();
-                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration);
+                GetScaleTween(HoveringScaleValue, HoverScaleBackDuration).PlayBackwards();
                 break;
 
             case HoverMode.AnimationAndExtra:
                 InitAnimation();
-                NormalImage.rectTransform.DOScale(defaultScaleValue, HoverScaleBackDuration);
+                GetScaleTween(HoveringScaleValue, HoverScaleBackDuration).PlayBackwards();
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(false);
                 break;
@@ -185,5 +189,15 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         {
             hoverTime += Time.deltaTime;
         }
+    }
+
+    private Tween m_ScaleTween;
+    private Tween GetScaleTween(float scale,float duration)
+    {
+        if(m_ScaleTween == null)
+        {
+            m_ScaleTween = NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration).SetAutoKill(false).Pause();
+        }
+        return m_ScaleTween;
     }
 }

@@ -5,7 +5,7 @@ using Zrime;
 
 public class LeftConnectionPanel : ZBasePanel
 {
-    public const float AddBtnInterval = 43;
+    public const float AddBtnInterval = 35.4f;
 
     [Space(24)]
     public CallerPanel CallerP;
@@ -71,13 +71,19 @@ public class LeftConnectionPanel : ZBasePanel
 
     public void AddCallerToList(/*CallerData data*/string playerid)
     {
+        if (ItemDic.ContainsKey(playerid))
+        {
+            Debug.LogError("ContainsKey : " + playerid);
+            return;
+        }
+
         var p = GameObject.Instantiate<IconItemLeft>(IconItemPrefab);
         p.AddListener();
         p.transform.SetParent(IconLayoutParent);
         p.gameObject.SetActive(true);
-        p.transform.localRotation = Quaternion.identity;
-        p.transform.localScale = Vector3.one;
-        p.transform.localPosition = new Vector3(p.transform.localPosition.x, p.transform.localPosition.y, 0);
+        p.GetComponent<RectTransform>().localRotation = Quaternion.identity;
+        p.GetComponent<RectTransform>().localScale = Vector3.one;
+        p.GetComponent<RectTransform>().localPosition = new Vector3(p.transform.localPosition.x, p.transform.localPosition.y, 0);
 
         p.PlayerId =playerid;
         ItemDic.Add(p.PlayerId, p);
@@ -128,7 +134,6 @@ public class LeftConnectionPanel : ZBasePanel
     }
     public void SwitchToAuido()
     {
-        Debug.Log("afasfdasdfasddf");
         MainController.Instance.OnAudioBtnClk();
         ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "mute_all_local_voice", "shelter"));
         AudioMode.SetActive(true);

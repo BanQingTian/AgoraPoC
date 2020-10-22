@@ -64,7 +64,7 @@ public class ZBasePanel : MonoBehaviour
 
     private void initMouseColor()
     {
-        Color c = new Color(0f, 1f, 0.8f, 1);
+        Color c = new Color(1f, 0.66f, 0f, 1);
         m_VirtualMouse.GetComponent<Image>().color = c;
         m_MouseHover.GetComponent<Image>().color = c;
 
@@ -72,6 +72,8 @@ public class ZBasePanel : MonoBehaviour
 
     public virtual void Hovering()
     {
+        //// init mouse position
+        //m_VirtualMouse.localPosition = new Vector3(0, 0, m_VirtualMouse.localPosition.z);
         m_Hovering = true;
         HoverStatus(true);
         registerMouse();

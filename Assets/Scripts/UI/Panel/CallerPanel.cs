@@ -36,6 +36,10 @@ public class CallerPanel : ZBasePanel
         item.PlayerId = playerid;
 
         CallerDic.Add(playerid, item);
+
+
+        // 模拟加载地图数据
+        UIManager.Instance.MapP.GetMapItem(playerid);
     }
 
     // caller offline
@@ -69,11 +73,14 @@ public class CallerPanel : ZBasePanel
 
 
     // 加入频道,从上线的列表中移除
-    public void MoveCallerToChannel(CallerDetailItem cdi)
+    public void MoveCallerToChannel(string pid)
     {
-        LeftConPanel.AddCallerToList(cdi.PlayerId);
+        // 告诉caller加入频道
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "join_channel", pid));
 
-        DeleteCaller(cdi.PlayerId);
+        LeftConPanel.AddCallerToList(pid);
+
+        DeleteCaller(pid);
     }
 
     public void Back() // btn clk

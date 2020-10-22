@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [Space(12)]
     public LeftConnectionPanel LeftConPanel;
     public CallerPanel CallerP;
+    public MapPanel MapP;
 
     public Transform Point;
 
@@ -30,6 +31,7 @@ public class UIManager : MonoBehaviour
         init();
         LeftConPanel.AddListener();
         CallerP.AddListener();
+        MapP.AddListener();
     }
 
 
@@ -58,6 +60,7 @@ public class UIManager : MonoBehaviour
     {
         CallerP.DeleteCaller(playerid);
         LeftConPanel.DeleteCaller(playerid);
+        MapP.DeleteMapCaller(playerid);
     }
 
     #endregion
