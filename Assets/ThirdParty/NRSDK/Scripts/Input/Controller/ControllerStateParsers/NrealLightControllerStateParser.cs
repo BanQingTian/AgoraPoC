@@ -117,9 +117,9 @@ namespace NRKernal
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception e)
             {
-                Debug.LogError("Controller Data Error");
+                NRDebugger.LogError("Controller Data Error :" + e.ToString());
             }
 
             state.isTouching = _touch_status;

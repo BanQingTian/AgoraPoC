@@ -95,13 +95,13 @@ public class VirtualCameraProvider : IStreamingProvider
         return resolution;
     }
 
-    public void Play()
+    public void Begin()
     {
         CameraProviderUpdater.Instance.StopCoroutine(RenderCorution());
         CameraProviderUpdater.Instance.StartCoroutine(RenderCorution());
     }
 
-    public void Pause()
+    public void End()
     {
         CameraProviderUpdater.Instance.StopCoroutine(RenderCorution());
     }

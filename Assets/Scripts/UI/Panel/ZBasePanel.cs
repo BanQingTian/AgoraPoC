@@ -113,7 +113,7 @@ public class ZBasePanel : MonoBehaviour
         if (curPos.x != 0 || curPos.y != 0)
         {
             Vector2 moved = lastPos == Vector2.zero ? Vector2.zero : curPos - lastPos;
-            m_VirtualMouse.localPosition += new Vector3(moved.x, moved.y) * 50;
+            m_VirtualMouse.localPosition += new Vector3(moved.x, moved.y) * 100;
             lastPos = curPos;
         }
         else

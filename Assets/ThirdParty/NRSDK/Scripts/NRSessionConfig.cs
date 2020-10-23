@@ -18,11 +18,6 @@ namespace NRKernal
     [CreateAssetMenu(fileName = "NRKernalSessionConfig", menuName = "NRSDK/SessionConfig", order = 1)]
     public class NRSessionConfig : ScriptableObject
     {
-        // Chooses whether optimized rendering will be used. It can't be changed in runtime.
-        [Tooltip("Chooses whether Optimized Rendering will be used. It can't be changed in runtime")]
-        [FormerlySerializedAs("Optimized Rendering")]
-        public bool OptimizedRendering = true;
-
         // Chooses which plane finding mode will be used.
         [Tooltip("Chooses which plane finding mode will be used.")]
         [FormerlySerializedAs("EnablePlaneFinding")]
@@ -37,6 +32,15 @@ namespace NRKernal
         [Tooltip("A scriptable object specifying the NRSDK TrackingImageDatabase configuration.")]
         public NRTrackingImageDatabase TrackingImageDatabase;
 
+        // A prefab specifying the NRSDK TrackingImageDatabase configuration.
+        [Tooltip("Chooses whether notification will be used.")]
+        public bool EnableNotification;
+
+        // A prefab specifying the NRSDK TrackingImageDatabase configuration.
+        [Tooltip("An error prompt will pop up when the device fails to connect.")]
+        public NRGlassesInitErrorTip ErrorTipsPrefab;
+
+
         /// <summary>
         /// ValueType check if two NRSessionConfig objects are equal.
         /// </summary>
@@ -49,8 +53,7 @@ namespace NRKernal
                 return false;
             }
 
-            if (OptimizedRendering != otherConfig.OptimizedRendering ||
-                PlaneFindingMode != otherConfig.PlaneFindingMode ||
+            if (PlaneFindingMode != otherConfig.PlaneFindingMode ||
                 ImageTrackingMode != otherConfig.ImageTrackingMode ||
                 TrackingImageDatabase != otherConfig.TrackingImageDatabase)
             {
@@ -74,10 +77,11 @@ namespace NRKernal
         /// <param name="other"></param>
         public void CopyFrom(NRSessionConfig other)
         {
-            OptimizedRendering = other.OptimizedRendering;
             PlaneFindingMode = other.PlaneFindingMode;
             ImageTrackingMode = other.ImageTrackingMode;
             TrackingImageDatabase = other.TrackingImageDatabase;
+            EnableNotification = other.EnableNotification;
+            ErrorTipsPrefab = other.ErrorTipsPrefab;
         }
     }
 }

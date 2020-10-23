@@ -52,7 +52,7 @@ namespace NRKernal.Record
                 matrix_data = NRFrame.GetEyeProjectMatrix(out result, m_TargetCamera.nearClipPlane, m_TargetCamera.farClipPlane);
             }
 
-            var eyeposFromHead = NRFrame.EyePosFromHead;
+            var eyeposFromHead = NRFrame.EyePoseFromHead;
             switch (EyeType)
             {
                 case NativeEye.LEFT:
@@ -79,6 +79,14 @@ namespace NRKernal.Record
                 default:
                     break;
             }
+        }
+
+        public void SwitchToEyeParam(NativeEye eye)
+        {
+            EyeType = eye;
+#if !UNITY_EDITOR
+            StartCoroutine(Initialize());
+#endif
         }
     }
 }

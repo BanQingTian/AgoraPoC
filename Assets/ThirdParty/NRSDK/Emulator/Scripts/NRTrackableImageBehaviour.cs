@@ -49,7 +49,6 @@ namespace NRKernal
                 NREmulatorManager.Instance.NativeEmulatorApi.UpdateTrackableData<NRTrackableImage>
                 (transform.position, transform.rotation, extent, extent, (uint)DatabaseIndex, TrackingState.Stopped);
             }
-
         }
 #endif
     }

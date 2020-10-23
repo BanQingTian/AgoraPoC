@@ -15,7 +15,7 @@ namespace NRKernal
 
     /// <summary>
     /// Holds information about NR Device's pose in the world coordinate, trackables, etc..
-    /// Through this class, application can get the infomation of current frame.
+    /// Through this class, application can get the information of current frame.
     /// It contains session status, lost tracking reason, device pose, trackables, etc..
     /// </summary>
     public partial class NRFrame
@@ -65,6 +65,11 @@ namespace NRKernal
             return false;
         }
 
+        public static void ClearPose()
+        {
+            m_HeadPose = Pose.identity;
+        }
+
         /// <summary>
         /// Get the pose of center camera between left eye and right eye.
         /// </summary>
@@ -87,15 +92,15 @@ namespace NRKernal
         /// <summary>
         /// Get the offset position between eye and head.
         /// </summary>
-        public static EyePoseData EyePosFromHead
+        public static EyePoseData EyePoseFromHead
         {
             get
             {
                 if (SessionStatus == SessionState.Running)
                 {
-                    m_EyePosFromHead.LEyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead(NativeEye.LEFT);
-                    m_EyePosFromHead.REyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead(NativeEye.RIGHT);
-                    m_EyePosFromHead.RGBEyePos = NRDevice.Instance.NativeHMD.GetEyePoseFromHead(NativeEye.RGB);
+                    m_EyePosFromHead.LEyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead((int)NativeEye.LEFT);
+                    m_EyePosFromHead.REyePose = NRDevice.Instance.NativeHMD.GetEyePoseFromHead((int)NativeEye.RIGHT);
+                    m_EyePosFromHead.RGBEyePos = NRDevice.Instance.NativeHMD.GetEyePoseFromHead((int)NativeEye.RGB);
                 }
                 return m_EyePosFromHead;
             }
@@ -120,7 +125,7 @@ namespace NRKernal
         public static NativeMat3f GetRGBCameraIntrinsicMatrix()
         {
             NativeMat3f result = new NativeMat3f();
-            NRDevice.Instance.NativeHMD.GetCameraIntrinsicMatrix(NativeEye.RGB, ref result);
+            NRDevice.Instance.NativeHMD.GetCameraIntrinsicMatrix((int)NativeEye.RGB, ref result);
             return result;
         }
 
@@ -131,7 +136,7 @@ namespace NRKernal
         public static NRDistortionParams GetRGBCameraDistortion()
         {
             NRDistortionParams result = new NRDistortionParams();
-            NRDevice.Instance.NativeHMD.GetCameraDistortion(NativeEye.RGB, ref result);
+            NRDevice.Instance.NativeHMD.GetCameraDistortion((int)NativeEye.RGB, ref result);
             return result;
         }
 
@@ -148,7 +153,7 @@ namespace NRKernal
         /// <summary>
         /// Get the list of trackables with specified filter.
         /// </summary>
-        /// <param name="trackables">A list where the returned trackable stored.The previous values will be cleared.</param>
+        /// <param name="trackables">A list where the returned trackable is stored. The previous values will be cleared.</param>
         /// <param name="filter">Query filter.</param>
         public static void GetTrackables<T>(List<T> trackables, NRTrackableQueryFilter filter) where T : NRTrackable
         {

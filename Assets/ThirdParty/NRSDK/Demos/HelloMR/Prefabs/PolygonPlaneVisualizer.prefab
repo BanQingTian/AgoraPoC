@@ -115,3 +115,8 @@ MonoBehaviour:
   m_InitializedInEditor: 0
   m_DatabaseIndex: -1
   Material: {fileID: 2100000, guid: 52424fe9902de9f4e851c0e5415c2b52, type: 2}
+  VectorsDataEditor:
+  - {x: 1, y: 0, z: 1}
+  - {x: 2, y: 0, z: -2}
+  - {x: -3, y: 0, z: -3}
+  - {x: -4, y: 0, z: 4}

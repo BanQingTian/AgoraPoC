@@ -38,9 +38,8 @@ namespace NRKernal
         void Start()
         {
             if (isDirty) return;
-            Debug.Log("[SessionBehaviour] DelayStart: StartSession");
+            Debug.Log("[SessionBehaviour] Start: StartSession");
             NRSessionManager.Instance.StartSession();
-            NRSessionManager.Instance.SetConfiguration(SessionConfig);
         }
 
         private void OnApplicationPause(bool pause)

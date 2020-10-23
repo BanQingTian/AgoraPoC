@@ -22,7 +22,7 @@ namespace NRKernal
 #endif
 
 #if UNITY_2018_1_OR_NEWER
-    internal class PreprocessBuildBase : IPreprocessBuildWithReport, IPostGenerateGradleAndroidProject
+    internal class PreprocessBuildBase : IPreprocessBuildWithReport
 #else
     internal class PreprocessBuildBase : IPreprocessBuild
 #endif
@@ -96,6 +96,7 @@ namespace NRKernal
                 Directory.CreateDirectory(basePath);
             }
             string xmlPath = Application.dataPath + "/Plugins/Android/AndroidManifest.xml";
+
             if (!File.Exists(xmlPath))
             {
                 string xml = DefaultXML.Replace("\'", "\"");
@@ -117,7 +118,9 @@ namespace NRKernal
         {
             var androidManifest = new AndroidManifest(path);
 
-            //androidManifest.SetExternalStorage();
+            // Set "android:requestLegacyExternalStorage='true'" attribute when the target sdk version is above api29
+            bool needrequestLegacyExternalStorage = ((int)PlayerSettings.Android.targetSdkVersion >= 29);
+            androidManifest.SetExternalStorage(needrequestLegacyExternalStorage);
             androidManifest.SetCameraPermission();
             androidManifest.SetBlueToothPermission();
             androidManifest.SetSDKMetaData();
@@ -126,13 +129,14 @@ namespace NRKernal
             androidManifest.Save();
         }
 
-        public void OnPostGenerateGradleAndroidProject(string basePath)
-        {
-            var pathBuilder = new StringBuilder(basePath);
-            pathBuilder.Append(Path.DirectorySeparatorChar).Append("src");
-            pathBuilder.Append(Path.DirectorySeparatorChar).Append("main");
-            pathBuilder.Append(Path.DirectorySeparatorChar).Append("AndroidManifest.xml");
-            AutoGenerateAndroidManifest(pathBuilder.ToString());
-        }
+        //public void OnPostGenerateGradleAndroidProject(string basePath)
+        //{
+        //    var pathBuilder = new StringBuilder(basePath);
+        //    pathBuilder.Append(Path.DirectorySeparatorChar).Append("src");
+        //    pathBuilder.Append(Path.DirectorySeparatorChar).Append("main");
+        //    pathBuilder.Append(Path.DirectorySeparatorChar).Append("AndroidManifest.xml");
+        //    Debug.LogError("OnPostGenerateGradleAndroidProject:" + pathBuilder.ToString());
+        //    AutoGenerateAndroidManifest(pathBuilder.ToString());
+        //}
     }
 }

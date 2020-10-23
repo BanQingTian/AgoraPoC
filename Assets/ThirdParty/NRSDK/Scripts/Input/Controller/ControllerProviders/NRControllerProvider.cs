@@ -42,7 +42,11 @@ namespace NRKernal
 
         public string GetVersion(int index)
         {
-            return m_NativeController.GetVersion(index);
+            if (m_NativeController != null)
+            {
+                return m_NativeController.GetVersion(index);
+            }
+            return string.Empty;
         }
 
         public override void OnPause()
@@ -132,7 +136,7 @@ namespace NRKernal
             }
 
 #if !UNITY_EDITOR
-            Debug.Log("[NRInput] version:" + GetVersion(0));
+            NRDebugger.Log("[NRInput] version:" + GetVersion(0));
 #endif
             m_NeedInit = false;
         }

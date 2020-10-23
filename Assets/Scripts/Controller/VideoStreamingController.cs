@@ -164,11 +164,11 @@ public class VideoStreamingController
             if (!pauseVideo)
             {
                 mRtcEngine.EnableVideo();
-                mStreamingProvider?.Play();
+                mStreamingProvider?.Begin();
             }
             else
             {
-                mStreamingProvider?.Pause();
+                mStreamingProvider?.End();
                 mRtcEngine.DisableVideo();
             }
         }

@@ -9,7 +9,7 @@
 
 namespace NRKernal
 {
-    internal enum NativeResult
+    public enum NativeResult
     {
         Success = 0,
         Failure = 1,
@@ -19,5 +19,10 @@ namespace NRKernal
         GlassesDisconnect = 5,
         SdkVersionMismatch = 6,
         SdcardPermissionDeny = 7,
+        RGBCameraDeviceNotFind = 8,
+        DPDeviceNotFind = 9,
+        TrackingNotRunning = 10,
+        GetDisplayFailure = 11,
+        GetDisplayModeMismatch = 12,
     }
 }

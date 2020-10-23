@@ -22,7 +22,6 @@ namespace NRKernal.NREditor
         private readonly SerializedProperty m_TrackingImageDatabase;
         private readonly SerializedProperty m_DatabaseIndex;
 
-
         public SerializedProperty AspectRatioProperty { get { return m_AspectRatio; } }
         public float AspectRatio { get { return m_AspectRatio.floatValue; } set { m_AspectRatio.floatValue = value; } }
 

@@ -27,7 +27,7 @@ namespace NRKernal
         /// <summary>
         /// Create a anchor for the trackable object
         /// </summary>
-        /// <param name="trackable">Instantiate a NRAnchor object whick Update trackable pose every frame</param>
+        /// <param name="trackable">Instantiate a NRAnchor object which Update trackable pose every frame</param>
         /// <returns>NRAnchor</returns>
         public static NRAnchor Factory(NRTrackable trackable)
         {

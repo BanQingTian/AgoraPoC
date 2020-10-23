@@ -4,6 +4,7 @@ public class TrackableFoundTest : MonoBehaviour
 {
     public TrackableObserver Observer;
     public GameObject Obj;
+
     void Start()
     {
 #if !UNITY_EDITOR
@@ -20,6 +21,7 @@ public class TrackableFoundTest : MonoBehaviour
         Obj.transform.rotation = qua;
         Obj.SetActive(true);
     }
+
     private void Lost()
     {
         Obj.SetActive(false);

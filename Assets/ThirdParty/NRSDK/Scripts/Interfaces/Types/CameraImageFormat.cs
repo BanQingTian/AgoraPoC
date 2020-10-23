@@ -12,7 +12,7 @@ namespace NRKernal
     /// <summary>
     /// RGB Camera's image format.
     /// </summary>
-    internal enum CameraImageFormat
+    public enum CameraImageFormat
     {
         /// <summary>
         /// YUV Not Supported now.

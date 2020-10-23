@@ -44,6 +44,7 @@ namespace NRKernal
                 return true;
             }
             NRDebugger.Log("Native Controller Create Failed!");
+            m_ControllerHandle = 0;
             return false;
         }
 
@@ -71,6 +72,10 @@ namespace NRKernal
 
         public int GetControllerCount()
         {
+            if (m_ControllerHandle == 0)
+            {
+                return 0;
+            }
             int count = 0;
             if (NativeApi.NRControllerGetCount(m_ControllerHandle, ref count) != NativeResult.Success)
                 Debug.LogError("Get Controller Count Failed!");
@@ -79,27 +84,47 @@ namespace NRKernal
 
         public void Pause()
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRControllerPause(m_ControllerHandle);
         }
 
         public void Resume()
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRControllerResume(m_ControllerHandle);
         }
 
         public void Stop()
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRControllerStop(m_ControllerHandle);
         }
 
         public void Destroy()
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             Stop();
             NativeApi.NRControllerDestroy(m_ControllerHandle);
         }
 
         public uint GetAvailableFeatures(int controllerIndex)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return 0;
+            }
             uint availableFeature = 0;
             NativeApi.NRControllerGetAvailableFeatures(m_ControllerHandle, controllerIndex, ref availableFeature);
             return availableFeature;
@@ -107,6 +132,10 @@ namespace NRKernal
 
         public ControllerType GetControllerType(int controllerIndex)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return ControllerType.CONTROLLER_TYPE_UNKNOWN;
+            }
             ControllerType controllerType = ControllerType.CONTROLLER_TYPE_UNKNOWN;
             NativeApi.NRControllerGetType(m_ControllerHandle, controllerIndex, ref controllerType);
             return controllerType;
@@ -114,16 +143,28 @@ namespace NRKernal
 
         public void RecenterController(int controllerIndex)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRControllerRecenter(m_ControllerHandle, controllerIndex);
         }
 
         public void TriggerHapticVibrate(int controllerIndex, Int64 duration, float frequency, float amplitude)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRControllerHapticVibrate(m_ControllerHandle, controllerIndex, duration, frequency, amplitude);
         }
 
         public bool UpdateState(int controllerIndex)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return false;
+            }
             if (m_StateHandles[controllerIndex] == 0)
                 NativeApi.NRControllerStateCreate(m_ControllerHandle, controllerIndex, ref m_StateHandles[controllerIndex]);
             if (m_StateHandles[controllerIndex] == 0)
@@ -255,6 +296,10 @@ namespace NRKernal
 
         public string GetVersion(int controllerIndex)
         {
+            if (m_ControllerHandle == 0)
+            {
+                return string.Empty;
+            }
             byte[] bytes = new byte[128];
             var result = NativeApi.NRControllerGetVersion(m_ControllerHandle, controllerIndex, bytes, bytes.Length);
             return System.Text.Encoding.ASCII.GetString(bytes, 0, bytes.Length);

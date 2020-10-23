@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace NRKernal.NRExamples
 {
@@ -17,7 +16,7 @@ namespace NRKernal.NRExamples
             get
             {
                 string timeStamp = Time.time.ToString().Replace(".", "").Replace(":", "");
-                string filename = string.Format("TestVideo_{0}.mp4", timeStamp);
+                string filename = string.Format("Nreal_Record_{0}.mp4", timeStamp);
                 string filepath = Path.Combine(Application.persistentDataPath, filename);
                 return filepath;
             }

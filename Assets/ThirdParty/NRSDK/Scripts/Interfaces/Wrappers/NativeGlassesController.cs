@@ -28,6 +28,8 @@ namespace NRKernal
         /// <param name="user_data">user_data The custom user data.</param>
         public delegate void NRGlassesControlPlugOffCallback(UInt64 glasses_control_handle, UInt64 user_data);
 
+        public delegate void NRGlassesControlNotifyQuitAppCallback(UInt64 glasses_control_handle, IntPtr user_data, GlassesDisconnectReason reason);
+
         private UInt64 m_GlassesControllerHandle = 0;
 
         public void Create()
@@ -42,10 +44,25 @@ namespace NRKernal
             NativeErrorListener.Check(result, this, "RegisGlassesWearCallBack");
         }
 
+        public GlassesTemperatureLevel GetTempratureLevel()
+        {
+            GlassesTemperatureLevel level = GlassesTemperatureLevel.TEMPERATURE_LEVEL_NORMAL;
+            NativeResult result = NativeApi.NRGlassesControlGetTemperatureLevel(m_GlassesControllerHandle, ref level);
+            NativeErrorListener.Check(result, this, "GetTempratureLevel");
+
+            return level;
+        }
+
         public void RegisGlassesPlugOutCallBack(NRGlassesControlPlugOffCallback callback, ulong userdata)
         {
             NativeResult result = NativeApi.NRGlassesControlSetGlassesDisconnectedCallback(m_GlassesControllerHandle, callback, userdata);
             NativeErrorListener.Check(result, this, "RegisGlassesPlugOutCallBack");
+        }
+
+        public void RegistGlassesEventCallBack(NRGlassesControlNotifyQuitAppCallback callback)
+        {
+            NativeResult result = NativeApi.NRGlassesControlSetNotifyQuitAppCallback(m_GlassesControllerHandle, callback, 0);
+            NativeErrorListener.Check(result, this, "RegistGlassesEventCallBack");
         }
 
         public void Start()
@@ -104,7 +121,6 @@ namespace NRKernal
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRGlassesControlPause(UInt64 glasses_control_handle);
 
-
             /// <summary>
             /// Resume the GlassesControl system.
             /// </summary>
@@ -129,6 +145,9 @@ namespace NRKernal
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRGlassesControlDestroy(UInt64 glasses_control_handle);
 
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRGlassesControlGetTemperatureLevel(UInt64 glasses_control_handle, ref GlassesTemperatureLevel temperature_level);
+
             /// <summary>
             /// Set the callback method when put on or take off glasses.
             /// </summary>
@@ -139,6 +158,10 @@ namespace NRKernal
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRGlassesControlSetGlassesWearingCallback(
                     UInt64 glasses_control_handle, NRGlassesControlWearCallback data_callback, UInt64 user_data);
+
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRGlassesControlSetNotifyQuitAppCallback(UInt64 glasses_control_handle,
+                NRGlassesControlNotifyQuitAppCallback callback, UInt64 user_data);
 
             /// <summary>
             /// Set the callback method when plug off the glasses.

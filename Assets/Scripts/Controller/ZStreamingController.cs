@@ -144,11 +144,11 @@ public class ZStreamingController
             if (!pauseVideo)
             {
                 mRtcEngine.EnableVideo();
-                mStreamingProvider?.Play();
+                mStreamingProvider?.Begin();
             }
             else
             {
-                mStreamingProvider?.Pause();
+                mStreamingProvider?.End();
                 mRtcEngine.DisableVideo();
             }
         }

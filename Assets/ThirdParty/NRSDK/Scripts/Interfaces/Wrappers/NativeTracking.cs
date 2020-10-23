@@ -35,6 +35,10 @@ namespace NRKernal
 
         public bool SetTrackingMode(TrackingMode mode)
         {
+            if (m_TrackingHandle == 0)
+            {
+                return false;
+            }
             NativeResult result = NativeApi.NRTrackingInitSetTrackingMode(m_TrackingHandle, mode);
             NativeErrorListener.Check(result, this, "SetTrackingMode");
             return result == NativeResult.Success;
@@ -42,13 +46,28 @@ namespace NRKernal
 
         public bool Start()
         {
+            if (m_TrackingHandle == 0)
+            {
+                return false;
+            }
             NativeResult result = NativeApi.NRTrackingStart(m_TrackingHandle);
             NativeErrorListener.Check(result, this, "Start");
             return result == NativeResult.Success;
         }
 
+        public bool SwitchTrackingMode(TrackingMode mode)
+        {
+            NativeResult result = NativeApi.NRTrackingSetTrackingMode(m_TrackingHandle, mode);
+            NativeErrorListener.Check(result, this, "SwitchTrackingMode");
+            return result == NativeResult.Success;
+        }
+
         public bool Pause()
         {
+            if (m_TrackingHandle == 0)
+            {
+                return false;
+            }
             NativeResult result = NativeApi.NRTrackingPause(m_TrackingHandle);
             NativeErrorListener.Check(result, this, "Pause");
             return result == NativeResult.Success;
@@ -56,6 +75,10 @@ namespace NRKernal
 
         public bool Resume()
         {
+            if (m_TrackingHandle == 0)
+            {
+                return false;
+            }
             NativeResult result = NativeApi.NRTrackingResume(m_TrackingHandle);
             NativeErrorListener.Check(result, this, "Resume");
             return result == NativeResult.Success;
@@ -64,23 +87,37 @@ namespace NRKernal
         // only worked at 3dof mode
         public void Recenter()
         {
+            if (m_TrackingHandle == 0)
+            {
+                return;
+            }
             var result = NativeApi.NRTrackingRecenter(m_TrackingHandle);
             NativeErrorListener.Check(result, this, "Recenter");
         }
 
         public bool Destroy()
         {
+            if (m_TrackingHandle == 0)
+            {
+                return false;
+            }
             NativeResult result = NativeApi.NRTrackingDestroy(m_TrackingHandle);
             NativeErrorListener.Check(result, this, "Destroy");
+            m_TrackingHandle = 0;
+            m_NativeInterface.TrackingHandle = m_TrackingHandle;
             return result == NativeResult.Success;
         }
 
         public void UpdateTrackables(UInt64 trackable_list_handle, TrackableType trackable_type)
         {
+            if (m_TrackingHandle == 0)
+            {
+                return;
+            }
             NativeApi.NRTrackingUpdateTrackables(m_NativeInterface.TrackingHandle, trackable_type, trackable_list_handle);
         }
 
-        private struct NativeApi
+        private partial struct NativeApi
         {
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingCreate(ref UInt64 out_tracking_handle);
@@ -90,6 +127,9 @@ namespace NRKernal
 
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingStart(UInt64 tracking_handle);
+
+            [DllImport(NativeConstants.NRNativeLibrary)]
+            public static extern NativeResult NRTrackingSetTrackingMode(UInt64 tracking_handle, TrackingMode tracking_mode);
 
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRTrackingDestroy(UInt64 tracking_handle);

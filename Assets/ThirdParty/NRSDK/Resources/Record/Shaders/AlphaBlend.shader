@@ -1,4 +1,4 @@
-﻿Shader "Nreal/AlphaBlend "
+﻿Shader "NRSDK/AlphaBlend "
 {
 	Properties
 	{
@@ -54,7 +54,7 @@
 					fixed4 col_bg = tex2D(_BcakGroundTex, uv);
 					fixed3 col_tex = lerp(col_bg.rgb, col.rgb, col.a);
 					return fixed4(col_tex,1);
-			}
+				}
 			ENDCG
 		}
 	}

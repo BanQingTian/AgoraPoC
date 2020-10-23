@@ -41,7 +41,7 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
-        public Pose GetEyePoseFromHead(NativeEye eye)
+        public Pose GetEyePoseFromHead(int eye)
         {
             Pose outEyePoseFromHead = Pose.identity;
             NativeMat4f mat4f = new NativeMat4f(Matrix4x4.identity);
@@ -65,32 +65,32 @@ namespace NRKernal
             return (result_left == NativeResult.Success && result_right == NativeResult.Success && result_RGB == NativeResult.Success);
         }
 
-        public bool GetCameraIntrinsicMatrix(NativeEye eye, ref NativeMat3f CameraIntrinsicMatix)
+        public bool GetCameraIntrinsicMatrix(int eye, ref NativeMat3f CameraIntrinsicMatix)
         {
-            if (eye != NativeEye.RGB)
-            {
-                Debug.LogError("[NativeHMD] Only for rgb camera now. Not support this camera:" + eye.ToString());
-                return false;
-            }
+            //if (eye != NativeEye.RGB)
+            //{
+            //    Debug.LogError("[NativeHMD] Only for rgb camera now. Not support this camera:" + eye.ToString());
+            //    return false;
+            //}
             var result = NativeApi.NRHMDGetCameraIntrinsicMatrix(m_HmdHandle, (int)eye, ref CameraIntrinsicMatix);
             return true;
         }
 
-        public bool GetCameraDistortion(NativeEye eye, ref NRDistortionParams distortion)
+        public bool GetCameraDistortion(int eye, ref NRDistortionParams distortion)
         {
-            if (eye != NativeEye.RGB)
-            {
-                Debug.LogError("[NativeHMD] Only for rgb camera now. Not support this camera:" + eye.ToString());
-                return false;
-            }
-            var result = NativeApi.NRHMDGetCameraDistortionParams(m_HmdHandle, (int)eye, ref distortion);
+            //if (eye != NativeEye.RGB)
+            //{
+            //    Debug.LogError("[NativeHMD] Only for rgb camera now. Not support this camera:" + eye.ToString());
+            //    return false;
+            //}
+            var result = NativeApi.NRHMDGetCameraDistortionParams(m_HmdHandle, eye, ref distortion);
             return true;
         }
 
-        public NativeResolution GetEyeResolution(NativeEye eye)
+        public NativeResolution GetEyeResolution(int eye)
         {
             NativeResolution resolution = new NativeResolution(3840, 1080);
-            var result = NativeApi.NRHMDGetEyeResolution(m_HmdHandle, (int)eye, ref resolution);
+            var result = NativeApi.NRHMDGetEyeResolution(m_HmdHandle, eye, ref resolution);
             NativeErrorListener.Check(result, this, "GetEyeResolution");
             return resolution;
         }

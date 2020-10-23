@@ -11,7 +11,6 @@ namespace NRKernal
 {
     using System;
     using UnityEngine;
-    using System.Runtime.InteropServices;
 
     /// <summary>
     /// Enumeration of handedness
@@ -49,6 +48,7 @@ namespace NRKernal
     /// are max two states for one controllerProvider.
     /// </summary>
     [HelpURL("https://developer.nreal.ai/develop/unity/controller")]
+    [ScriptOrder(-100)]
     public partial class NRInput : SingletonBehaviour<NRInput>
     {
         [Tooltip("If enable this, phone virtual controller would be shown in Unity Editor")]
@@ -183,14 +183,14 @@ namespace NRKernal
                 return;
             }
             //Should not be inited at Awake, because that default controller provider may be changed at Awake
-            Init();
+            NRSessionManager.Instance.AfterInitialized(Init);
 #if UNITY_EDITOR
             // For Emulator Init
             InitEmulator();
 #endif
         }
 
-        private void Update()
+        private void OnUpdate()
         {
             if (m_ControllerProvider == null)
                 return;
@@ -220,8 +220,8 @@ namespace NRKernal
             {
                 return;
             }
-            if (m_ControllerProvider != null)
-                m_ControllerProvider.OnResume();
+            NRKernalUpdater.OnPostUpdate += OnUpdate;
+            m_ControllerProvider?.OnResume();
         }
 
         private void OnDisable()
@@ -230,8 +230,8 @@ namespace NRKernal
             {
                 return;
             }
-            if (m_ControllerProvider != null)
-                m_ControllerProvider.OnPause();
+            NRKernalUpdater.OnPostUpdate -= OnUpdate;
+            m_ControllerProvider?.OnPause();
         }
 
         public string GetVersion(int index)
@@ -344,9 +344,17 @@ namespace NRKernal
         private Transform GetCameraCenter()
         {
             if (m_OverrideCameraCenter)
+            {
                 return m_OverrideCameraCenter;
-            if (Camera.main)
+            }
+            if (Camera.main != null)
+            {
                 return Camera.main.transform;
+            }
+            else if (NRSessionManager.Instance.NRHMDPoseTracker != null)
+            {
+                return NRSessionManager.Instance.NRHMDPoseTracker.centerCamera.transform;
+            }
             return null;
         }
 
@@ -405,7 +413,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the controller 
+        /// Returns true if the controller is available
         /// </summary>
         public static bool CheckControllerAvailable(ControllerHandEnum handEnum)
         {
@@ -418,7 +426,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the current controller supports the certain feature.
+        /// Returns true if the current controller supports the certain feature
         /// </summary>
         public static bool GetControllerAvailableFeature(ControllerAvailableFeature feature)
         {
@@ -428,7 +436,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button is currently pressed this frame.
+        /// Returns true if the button is currently pressed this frame
         /// </summary>
         public static bool GetButton(ControllerButton button)
         {
@@ -436,7 +444,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button was pressed down this frame.
+        /// Returns true if the button was pressed down this frame
         /// </summary>
         public static bool GetButtonDown(ControllerButton button)
         {
@@ -444,7 +452,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button was released this frame.
+        /// Returns true if the button was released this frame
         /// </summary>
         public static bool GetButtonUp(ControllerButton button)
         {
@@ -452,7 +460,15 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns a Vector2 touch position on touchpad of the domain controller, range: x(-1f ~ 1f), y(-1f ~ 1f);
+        /// Returns true if the touchpad is being touched
+        /// </summary>
+        public static bool IsTouching()
+        {
+            return IsTouching(m_DomainHand);
+        }
+
+        /// <summary>
+        /// Returns a Vector2 touch position on touchpad of the domain controller, range: x(-1f ~ 1f), y(-1f ~ 1f)
         /// </summary>
         /// <returns></returns>
         public static Vector2 GetTouch()
@@ -525,7 +541,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button is currently pressed this frame on a certain handedness controller.
+        /// Returns true if the button is currently pressed this frame on a certain handedness controller
         /// </summary>
         public static bool GetButton(ControllerHandEnum hand, ControllerButton button)
         {
@@ -537,7 +553,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button was pressed down this frame on a certain handedness controller.
+        /// Returns true if the button was pressed down this frame on a certain handedness controller
         /// </summary>
         public static bool GetButtonDown(ControllerHandEnum hand, ControllerButton button)
         {
@@ -549,7 +565,7 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns true if the button was released this frame on a certain handedness controller.
+        /// Returns true if the button was released this frame on a certain handedness controller
         /// </summary>
         public static bool GetButtonUp(ControllerHandEnum hand, ControllerButton button)
         {
@@ -561,7 +577,15 @@ namespace NRKernal
         }
 
         /// <summary>
-        /// Returns a Vector2 touch position on touchpad of a certain handedness controller, range: x(-1f ~ 1f), y(-1f ~ 1f).
+        /// Returns true if the touchpad is being touched this frame on a certain handedness controller
+        /// </summary>
+        public static bool IsTouching(ControllerHandEnum hand)
+        {
+            return GetControllerState(hand).isTouching;
+        }
+
+        /// <summary>
+        /// Returns a Vector2 touch position on touchpad of a certain handedness controller, range: x(-1f ~ 1f), y(-1f ~ 1f)
         /// </summary>
         public static Vector2 GetTouch(ControllerHandEnum hand)
         {

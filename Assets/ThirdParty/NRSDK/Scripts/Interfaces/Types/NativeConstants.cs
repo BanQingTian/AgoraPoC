@@ -25,7 +25,6 @@ namespace NRKernal
         public const string NRNativeLibrary = "nr_api";
 #endif
 
-
 #if UNITY_EDITOR_OSX
         public static string TrackingImageCliBinary = "trackableImageTools_osx";
 #elif UNITY_EDITOR_WIN
@@ -34,11 +33,15 @@ namespace NRKernal
         public static string TrackingImageCliBinary = "trackableImageTools_linux";
 #endif
 
+        public const string READ_EXTERNAL_STORAGE_PERMISSION = "android.permission.READ_EXTERNAL_STORAGE";
+
         public static string ZipKey = "89f55314-6d41-416c-b4d9-4bdbc155e576";
 
-        public static string GlassesDisconnectErrorTip = "Glasses connect error. Please connect the device correctly.";
-        public static string SdkVersionMismatchErrorTip = "The NRSDK version does not match. Please update to the latest version of the service.";
+        public static string GlassesDisconnectErrorTip = "Please connect your Nreal Light Glasses.";
+        public static string SdkVersionMismatchErrorTip = "Please update to the latest version of NRSDK.";
         public static string SdcardPermissionDenyErrorTip = "There is no write permission for sdcard. Please go to the authorization management page of the device to authorize.";
-        public static string UnknowErrorTip = "Unkown error. Please contact nreal's after sales team.";
+        public static string UnknowErrorTip = "Unkown error! \nPlease contact Nreal's customer service.";
+
+        public static string NotificationLevelWarning = "Warning";
     }
 }

@@ -1,4 +1,14 @@
-﻿namespace NRKernal.Record
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+
+namespace NRKernal.Record
 {
     public struct CameraParameters
     {
@@ -8,8 +18,8 @@
             this.hologramOpacity = 1f;
             this.frameRate = 20;
 
-            this.cameraResolutionWidth = NRRgbCamera.Resolution.width;
-            this.cameraResolutionHeight = NRRgbCamera.Resolution.height;
+            this.cameraResolutionWidth = 1280;
+            this.cameraResolutionHeight = 720;
 
             this.pixelFormat = CapturePixelFormat.BGRA32;
             this.blendMode = mode;

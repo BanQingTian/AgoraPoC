@@ -15,132 +15,46 @@ namespace NRKernal
     /// <summary>
     /// Create a rgb camera texture.
     /// </summary>
-    public class NRRGBCamTexture
+    public class NRRGBCamTexture : CameraModelView
     {
-        public Action<RGBTextureFrame> OnUpdate;
-        public Action<RGBRawDataFrame> OnRawDataUpdate;
+        public Action<CameraTextureFrame> OnUpdate;
+        public CameraTextureFrame CurrentFrame;
+        private Texture2D m_Texture;
 
-        public int Height
+        private Texture2D CreateTexture()
         {
-            get
-            {
-                return NRRgbCamera.Resolution.height;
-            }
-        }
-
-        public int Width
-        {
-            get
-            {
-                return NRRgbCamera.Resolution.width;
-            }
-        }
-
-        private bool m_IsPlaying = false;
-        public bool IsPlaying
-        {
-            get
-            {
-                return m_IsPlaying;
-            }
-        }
-
-        public bool DidUpdateThisFrame
-        {
-            get
-            {
-                return NRRgbCamera.HasFrame();
-            }
-        }
-
-        public int FrameCount = 0;
-
-        private Texture2D m_texture;
-
-        public RGBTextureFrame CurrentFrame;
-
-        private bool m_IsInitilized = false;
-        private void Initilize()
-        {
-            if (m_IsInitilized)
-            {
-                return;
-            }
-            if (m_texture == null)
-            {
-                m_texture = CreateTex();
-            }
-            NRRgbCamera.Regist(this);
-            m_IsInitilized = true;
-        }
-
-        private Texture2D CreateTex()
-        {
-            return new Texture2D(NRRgbCamera.Resolution.width, NRRgbCamera.Resolution.height, TextureFormat.RGB24, false);
-        }
-
-        public void Play()
-        {
-            if (m_IsPlaying)
-            {
-                return;
-            }
-            this.Initilize();
-            NRKernalUpdater.Instance.OnUpdate += UpdateTexture;
-            NRRgbCamera.Play();
-            m_IsPlaying = true;
-        }
-
-        public void Pause()
-        {
-            if (!m_IsPlaying)
-            {
-                return;
-            }
-            NRKernalUpdater.Instance.OnUpdate -= UpdateTexture;
-            m_IsPlaying = false;
+            return new Texture2D(Width, Height, TextureFormat.RGB24, false);
         }
 
         public Texture2D GetTexture()
         {
-            if (m_texture == null)
+            if (m_Texture == null)
             {
-                m_texture = CreateTex();
+                m_Texture = CreateTexture();
             }
-            return m_texture;
+            return m_Texture;
         }
 
-        private void UpdateTexture()
+        protected override void OnCreated()
         {
-            if (!NRRgbCamera.HasFrame())
-            {
-                return;
-            }
-            RGBRawDataFrame rgbRawDataFrame = NRRgbCamera.GetRGBFrame();
-
-            //m_texture.LoadRawTextureData(rgbRawDataFrame.data);
-            //m_texture.Apply();
-
-            //CurrentFrame.timeStamp = rgbRawDataFrame.timeStamp;
-            //CurrentFrame.texture = m_texture;
-            FrameCount++;
-
-            //OnUpdate?.Invoke(CurrentFrame);
-            OnRawDataUpdate?.Invoke(rgbRawDataFrame);
+            this.m_Texture = CreateTexture();
         }
 
-        public void Stop()
+        protected override void OnRawDataUpdate(FrameRawData rgbRawDataFrame)
         {
-            if (!m_IsInitilized)
-            {
-                return;
-            }
-            NRRgbCamera.UnRegist(this);
-            this.Pause();
-            NRRgbCamera.Stop();
-            GameObject.Destroy(m_texture);
-            m_texture = null;
-            m_IsInitilized = false;
+            m_Texture.LoadRawTextureData(rgbRawDataFrame.data);
+            m_Texture.Apply();
+
+            CurrentFrame.timeStamp = rgbRawDataFrame.timeStamp;
+            CurrentFrame.texture = m_Texture;
+
+            OnUpdate?.Invoke(CurrentFrame);
+        }
+
+        protected override void OnStopped()
+        {
+            GameObject.Destroy(m_Texture);
+            m_Texture = null;
         }
     }
 }

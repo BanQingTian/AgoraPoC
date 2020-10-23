@@ -15,12 +15,8 @@ namespace NRKernal
     /// <summary>
     /// Session Native API.
     /// </summary>
-    internal partial class NativeCamera
+    internal partial class NativeCamera : ICameraDataProvider
     {
-        [UnmanagedFunctionPointer(CallingConvention.Cdecl)]
-        public delegate void NRRGBCameraImageCallback(UInt64 rgb_camera_handle,
-               UInt64 rgb_camera_image_handle, UInt64 userdata);
-
         private UInt64 m_NativeCameraHandle;
 
         public bool Create()
@@ -30,7 +26,7 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
-        public bool GetRawData(UInt64 imageHandle, ref IntPtr ptr, ref int size)
+        public bool GetRawData(UInt64 imageHandle, int eye, ref IntPtr ptr, ref int size)
         {
             uint data_size = 0;
             var result = NativeApi.NRRGBCameraImageGetRawData(m_NativeCameraHandle, imageHandle, ref ptr, ref data_size);
@@ -39,7 +35,7 @@ namespace NRKernal
             return result == NativeResult.Success;
         }
 
-        public NativeResolution GetResolution(UInt64 imageHandle)
+        public NativeResolution GetResolution(UInt64 imageHandle, int eye)
         {
             NativeResolution resolution = new NativeResolution(0, 0);
             var result = NativeApi.NRRGBCameraImageGetResolution(m_NativeCameraHandle, imageHandle, ref resolution);
@@ -47,14 +43,14 @@ namespace NRKernal
             return resolution;
         }
 
-        public UInt64 GetHMDTimeNanos(UInt64 imageHandle)
+        public UInt64 GetHMDTimeNanos(UInt64 imageHandle, int eye)
         {
             UInt64 time = 0;
             NativeApi.NRRGBCameraImageGetHMDTimeNanos(m_NativeCameraHandle, imageHandle, ref time);
             return time;
         }
 
-        public bool SetCaptureCallback(NRRGBCameraImageCallback callback, UInt64 userdata = 0)
+        public bool SetCaptureCallback(CameraImageCallback callback, UInt64 userdata = 0)
         {
             var result = NativeApi.NRRGBCameraSetCaptureCallback(m_NativeCameraHandle, callback, userdata);
             NativeErrorListener.Check(result, this, "SetCaptureCallback");
@@ -119,7 +115,7 @@ namespace NRKernal
 
             [DllImport(NativeConstants.NRNativeLibrary, CallingConvention = CallingConvention.Cdecl)]
             public static extern NativeResult NRRGBCameraSetCaptureCallback(
-                UInt64 rgb_camera_handle, NRRGBCameraImageCallback image_callback, UInt64 userdata);
+                UInt64 rgb_camera_handle, CameraImageCallback image_callback, UInt64 userdata);
 
             [DllImport(NativeConstants.NRNativeLibrary)]
             public static extern NativeResult NRRGBCameraSetImageFormat(

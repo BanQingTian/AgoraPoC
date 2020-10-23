@@ -9,8 +9,6 @@
 
 namespace NRKernal
 {
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
 
     /// @cond EXCLUDE_FROM_DOXYGEN
@@ -20,7 +18,7 @@ namespace NRKernal
         private NRPointerRaycaster m_Raycaster;
         private bool m_IsEnabled;
 
-        public Transform CameraCenter
+        private Transform CameraCenter
         {
             get
             {

@@ -14,25 +14,17 @@
         Mesh m_PlaneMesh = null;
 
 #if UNITY_EDITOR
+        [SerializeField]
+        private Vector3[] VectorsDataEditor = new Vector3[4];
         public void GetBoundaryPolygon(Transform tran, List<Vector3> polygonList)
         {
             polygonList.Clear();
 
-            float[] point_data = new float[8];
-            point_data[0] = 1;
-            point_data[1] = 1;
-            point_data[2] = 2;
-            point_data[3] = -2;
-            point_data[4] = -3;
-            point_data[5] = -3;
-            point_data[6] = -4;
-            point_data[7] = 4;
             Pose centerPos = new Pose(tran.position, tran.rotation);
             var unityWorldTPlane = Matrix4x4.TRS(tran.position, tran.rotation, Vector3.one);
-            for (int i = point_data.Length - 2; i >= 0; i -= 2)
+            for (int i = 0; i < VectorsDataEditor.Length; i++)
             {
-                Vector3 localpos = new Vector3(point_data[i], 0, point_data[i + 1]);
-                polygonList.Add(unityWorldTPlane.MultiplyPoint3x4(localpos));
+                polygonList.Add(unityWorldTPlane.MultiplyPoint3x4(VectorsDataEditor[i]));
             }
         }
 #endif
@@ -57,7 +49,7 @@
 
         private void DrawFromCenter(Pose centerPose, List<Vector3> vectors)
         {
-            if (vectors == null || vectors.Count == 0)
+            if (vectors == null || vectors.Count < 3)
             {
                 return;
             }
@@ -82,9 +74,12 @@
             {
                 m_Renderer = gameObject.GetComponent<MeshRenderer>();
                 m_Renderer.material = Material;
+                var planeInVector_1 = vertices3D[0] - vertices3D[1];
+                var planeInVector_2 = vertices3D[1] - vertices3D[2];
+                m_Renderer.material.SetVector("_PlaneIn", planeInVector_1);
+                m_Renderer.material.SetVector("_PlaneNormal", Vector3.Cross(planeInVector_1, planeInVector_2));
             }
 
-            m_Renderer.material.SetVector("_PlaneNormal", centerPose.up);
             if (m_Filter == null)
             {
                 m_Filter = gameObject.GetComponent<MeshFilter>();

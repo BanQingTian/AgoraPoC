@@ -7,12 +7,9 @@
 * 
 *****************************************************************************/
 
-using UnityEngine;
-
 namespace NRKernal.Record
 {
-    using System;
-    using NRKernal;
+    using UnityEngine;
 
     public class RGBCameraFrameProvider : AbstractFrameProvider
     {
@@ -24,7 +21,7 @@ namespace NRKernal.Record
             m_RGBTex.OnUpdate += UpdateFrame;
         }
 
-        private void UpdateFrame(RGBTextureFrame frame)
+        private void UpdateFrame(CameraTextureFrame frame)
         {
             OnUpdate?.Invoke(frame);
             m_IsFrameReady = true;

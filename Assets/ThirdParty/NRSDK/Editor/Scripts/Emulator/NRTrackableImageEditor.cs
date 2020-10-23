@@ -9,7 +9,6 @@
 
 namespace NRKernal.NREditor
 {
-    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
@@ -29,18 +28,14 @@ namespace NRKernal.NREditor
             m_Database = GameObject.FindObjectOfType<NRSessionBehaviour>().SessionConfig.TrackingImageDatabase;
 
             if (m_Database == null) return;
-
             m_ImagesName = new string[m_Database.Count];
-
             EditorDatabase(itb, m_SerializedObj);
         }
 
         public override void OnInspectorGUI()
         {
             base.OnInspectorGUI();
-
             DrawInspectorGUI();
-
             serializedObject.ApplyModifiedProperties();
         }
 
@@ -108,7 +103,6 @@ namespace NRKernal.NREditor
             {
                 CheckMesh(serializedObj);
             }
-
         }
 
         private void UpdateProperties(NRSerializedImageTarget sit)
@@ -158,7 +152,6 @@ namespace NRKernal.NREditor
         internal static void UpdateMaterial(NRSerializedImageTarget sit)
         {
             Material mat = sit.GetMaterial();
-
             Material loadMat = LoadMat();
 
             if (mat == null || mat == loadMat)

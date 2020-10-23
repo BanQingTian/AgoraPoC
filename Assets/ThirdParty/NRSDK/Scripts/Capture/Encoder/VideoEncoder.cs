@@ -17,6 +17,7 @@ namespace NRKernal.Record
     public class VideoEncoder : IEncoder
     {
 #if !UNITY_EDITOR
+        private const int STARTENCODEEVENT = 0x1001;
         public static NativeEncoder NativeEncoder { get; set; }
         private delegate void RenderEventDelegate(int eventID);
         private static RenderEventDelegate RenderThreadHandle = new RenderEventDelegate(RunOnRenderThread);
@@ -25,8 +26,6 @@ namespace NRKernal.Record
         private bool m_IsStarted = false;
 
         public NativeEncodeConfig EncodeConfig;
-
-        private const int STARTENCODEEVENT = 0x0001;
 
         private IntPtr m_TexPtr = IntPtr.Zero;
 

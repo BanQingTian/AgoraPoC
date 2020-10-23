@@ -35,5 +35,10 @@ namespace NRKernal
          * Reposition.
          */
         RELOCALIZING = 4,
+
+        /**
+         * Reposition.
+         */
+        ENTER_VRMODE = 5,
     }
 }

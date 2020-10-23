@@ -2,16 +2,19 @@
 using NRKernal;
 using UnityEngine;
 
-public class RGBCameraProvider : IStreamingProvider
+
+public class RGBCameraProvider : CameraModelView,IStreamingProvider
 {
-    NRRGBCamTexture RGBCamTexture;
     StreamingReceiver m_Receiver;
 
     public RGBCameraProvider()
     {
-        RGBCamTexture = new NRRGBCamTexture();
-        RGBCamTexture.Play();
-        RGBCamTexture.OnRawDataUpdate += OnRawDataUpdate;
+       
+    }
+
+    protected override void OnRawDataUpdate(FrameRawData rgbRawDataFrame)
+    {
+        this.Commit(GenerateAFrame(rgbRawDataFrame));
     }
 
     public void Init(StreamingReceiver receiver)
@@ -24,21 +27,16 @@ public class RGBCameraProvider : IStreamingProvider
         m_Receiver(frame);
     }
 
-    private void OnRawDataUpdate(RGBRawDataFrame obj)
-    {
-        this.Commit(GenerateAFrame(obj));
-    }
-
     private long TimeStamp = 0;
-    public ExternalVideoFrame GenerateAFrame(RGBRawDataFrame rgbframe)
+    public ExternalVideoFrame GenerateAFrame(FrameRawData rgbframe)
     {
         ExternalVideoFrame frame = new ExternalVideoFrame();
         frame.type = ExternalVideoFrame.VIDEO_BUFFER_TYPE.VIDEO_BUFFER_RAW_DATA;
         frame.format = ExternalVideoFrame.VIDEO_PIXEL_FORMAT.VIDEO_PIXEL_I420;
         frame.buffer = rgbframe.data;
         frame.stride = 0;
-        frame.stride = RGBCamTexture.Width;
-        frame.height = RGBCamTexture.Height;
+        frame.stride = this.Width;
+        frame.height = this.Height;
         frame.timestamp = TimeStamp;
         TimeStamp++;
 
@@ -48,24 +46,24 @@ public class RGBCameraProvider : IStreamingProvider
     public Resolution GetResolution()
     {
         var resolution = new Resolution();
-        resolution.width = RGBCamTexture.Width;
-        resolution.height = RGBCamTexture.Height;
+        resolution.width = this.Width;
+        resolution.height = this.Height;
 
         return resolution;
     }
 
-    public void Play()
+    public void Begin()
     {
-        RGBCamTexture.Play();
+        base.Play();
     }
 
-    public void Pause()
+    public void End()
     {
-        RGBCamTexture.Pause();
+        base.Pause();
     }
 
     public void Dispose()
     {
-        RGBCamTexture.Stop();
+        base.Stop();
     }
 }

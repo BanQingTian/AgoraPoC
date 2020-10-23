@@ -45,5 +45,10 @@ namespace NRKernal
         /// 3Dof mode, only rotation.  
         /// </summary>
         MODE_3DOF = 1,
+
+        /// <summary>
+        /// 0Dof mode.  
+        /// </summary>
+        MODE_0DOF = 2,
     }
 }

@@ -90,22 +90,27 @@ namespace NRKernal.Record
             m_BlendMode = param.blendMode;
             m_TargetCamera = camera;
             m_Encoder = encoder;
-
+            Shader blendshader;
             switch (m_BlendMode)
             {
                 case BlendMode.RGBOnly:
+                    blendshader = Resources.Load<Shader>("Record/Shaders/NormalBlend");
+                    m_BlendMaterial = new Material(blendshader);
                     BlendTexture = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
                     break;
                 case BlendMode.VirtualOnly:
+                    blendshader = Resources.Load<Shader>("Record/Shaders/NormalBlend");
+                    m_BlendMaterial = new Material(blendshader);
                     BlendTexture = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
                     break;
                 case BlendMode.Blend:
-                    Shader blendshader;
                     blendshader = Resources.Load<Shader>("Record/Shaders/AlphaBlend");
                     m_BlendMaterial = new Material(blendshader);
                     BlendTexture = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
                     break;
                 case BlendMode.WidescreenBlend:
+                    blendshader = Resources.Load<Shader>("Record/Shaders/NormalBlend");
+                    m_BlendMaterial = new Material(blendshader);
                     BlendTexture = new RenderTexture(2 * Width, Height, 24, RenderTextureFormat.ARGB32);
                     m_RGBSource = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
                     m_TempCombineTex = new Texture2D(2 * Width, Height, TextureFormat.ARGB32, false);
@@ -117,7 +122,7 @@ namespace NRKernal.Record
             m_TargetCamera.targetTexture = new RenderTexture(Width, Height, 24, RenderTextureFormat.ARGB32);
         }
 
-        public void OnFrame(RGBTextureFrame frame)
+        public void OnFrame(CameraTextureFrame frame)
         {
             Texture2D frametex = frame.texture as Texture2D;
             m_RGBOrigin = frametex;
@@ -127,10 +132,12 @@ namespace NRKernal.Record
             switch (m_BlendMode)
             {
                 case BlendMode.RGBOnly:
-                    Graphics.Blit(frame.texture, BlendTexture);
+                    m_BlendMaterial.SetTexture("_MainTex", frame.texture);
+                    Graphics.Blit(frame.texture, BlendTexture, m_BlendMaterial);
                     break;
                 case BlendMode.VirtualOnly:
-                    Graphics.Blit(m_TargetCamera.targetTexture, BlendTexture);
+                    m_BlendMaterial.SetTexture("_MainTex", m_TargetCamera.targetTexture);
+                    Graphics.Blit(m_TargetCamera.targetTexture, BlendTexture, m_BlendMaterial);
                     break;
                 case BlendMode.Blend:
                     m_BlendMaterial.SetTexture("_MainTex", m_TargetCamera.targetTexture);
@@ -151,7 +158,8 @@ namespace NRKernal.Record
 
         private void CombineTexture(Texture2D bgsource, RenderTexture foresource, Texture2D tempdest, RenderTexture dest)
         {
-            Graphics.Blit(bgsource, m_RGBSource);
+            m_BlendMaterial.SetTexture("_MainTex", m_RGBSource);
+            Graphics.Blit(bgsource, m_RGBSource, m_BlendMaterial);
 
             RenderTexture prev = RenderTexture.active;
             RenderTexture.active = m_RGBSource;

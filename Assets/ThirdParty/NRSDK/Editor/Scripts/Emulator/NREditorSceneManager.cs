@@ -9,8 +9,6 @@
 
 namespace NRKernal.NREditor
 {
-    using System.Collections;
-    using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
     using System;
@@ -43,26 +41,22 @@ namespace NRKernal.NREditor
         }
 
         public bool SceneInitialized { get { return m_SceneInitialized; } }
-        
-
 
         private NREditorSceneManager()
         {
-
             //return;
             m_UpdateCallback = new EditorApplication.CallbackFunction(EditorUpdate);
             if (EditorApplication.update == null || !EditorApplication.update.Equals(m_UpdateCallback))
             {
                 EditorApplication.update = (EditorApplication.CallbackFunction)System.Delegate.Combine(EditorApplication.update, m_UpdateCallback);
             }
-           
+
             m_SceneInitialized = false;
         }
 
         public void InitScene()
         {
             m_SceneInitialized = true;
-
         }
 
         public void EditorUpdate()
@@ -84,6 +78,7 @@ namespace NRKernal.NREditor
                 m_UnloadUnusedAssets = false;
             }
         }
+
         private void UpdateTrackableAppearance(NRTrackableBehaviour[] trackables)
         {
             if (!Application.isPlaying)

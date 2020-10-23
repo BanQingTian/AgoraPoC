@@ -7,20 +7,14 @@
 * 
 *****************************************************************************/
 
-namespace NRKernal
+namespace NRKernal.Record
 {
     using System;
     using UnityEngine;
 
-    public struct RGBTextureFrame
-    {
-        public UInt64 timeStamp;
-        public Texture texture;
-    }
-
     public abstract class AbstractFrameProvider
     {
-        public delegate void UpdateImageFrame(RGBTextureFrame frame);
+        public delegate void UpdateImageFrame(CameraTextureFrame frame);
         public UpdateImageFrame OnUpdate;
         protected bool m_IsFrameReady = false;
 

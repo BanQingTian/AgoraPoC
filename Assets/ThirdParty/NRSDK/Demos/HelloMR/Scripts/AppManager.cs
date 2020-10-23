@@ -24,8 +24,6 @@ namespace NRKernal.NRExamples
             NRInput.AddClickListener(ControllerHandEnum.Left, ControllerButton.HOME, OnHomeButtonClick);
             NRInput.AddClickListener(ControllerHandEnum.Right, ControllerButton.APP, OnAppButtonClick);
             NRInput.AddClickListener(ControllerHandEnum.Left, ControllerButton.APP, OnAppButtonClick);
-
-            NRDevice.OnAppQuit += OnApplicationQuit;
         }
 
         private void OnDisable()
@@ -97,14 +95,10 @@ namespace NRKernal.NRExamples
             m_LastClickTime = Time.unscaledTime;
         }
 
+
         public static void QuitApplication()
         {
-            NRDevice.QuitApp();
-        }
-
-        private void OnApplicationQuit()
-        {
-            Debug.Log("OnApplicationQuit");
+            Application.Quit();
         }
     }
 }

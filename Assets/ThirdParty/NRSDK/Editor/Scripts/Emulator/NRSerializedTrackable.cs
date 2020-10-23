@@ -7,18 +7,14 @@
 * 
 *****************************************************************************/
 
-
-
 namespace NRKernal.NREditor
 {
-    using System.Collections;
     using System.Collections.Generic;
     using UnityEngine;
     using UnityEditor;
 
     public class NRSerializedTrackable
     {
-
         protected readonly SerializedObject m_SerializedObject;
         private readonly SerializedProperty m_TrackableName;
         private readonly SerializedProperty m_InitializedInEditor;

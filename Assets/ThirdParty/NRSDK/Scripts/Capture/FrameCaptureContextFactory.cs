@@ -7,10 +7,10 @@
 * 
 *****************************************************************************/
 
-using System.Collections.Generic;
-
 namespace NRKernal.Record
 {
+    using System.Collections.Generic;
+
     public class FrameCaptureContextFactory
     {
         private static List<FrameCaptureContext> m_ContextList = new List<FrameCaptureContext>();

@@ -9,9 +9,9 @@ public interface IStreamingProvider:IDisposable
 
     void Commit(ExternalVideoFrame frame);
 
-    void Play();
+    void Begin();
 
-    void Pause();
+    void End();
 
     Resolution GetResolution();
 }

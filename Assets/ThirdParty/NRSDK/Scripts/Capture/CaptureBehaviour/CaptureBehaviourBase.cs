@@ -37,7 +37,7 @@ namespace NRKernal.Record
             m_PredictTime = (ulong)(value * 1000000);
         }
 
-        public virtual void OnFrame(RGBTextureFrame frame)
+        public virtual void OnFrame(CameraTextureFrame frame)
         {
             // update camera pose
             UpdateHeadPoseByTimestamp(frame.timeStamp);

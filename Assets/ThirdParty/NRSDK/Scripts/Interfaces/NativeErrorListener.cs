@@ -13,8 +13,9 @@ namespace NRKernal
 {
     public class NativeErrorListener
     {
-        internal static void Check(NativeResult result, object module, string funcName = "", bool needthrowerror = false)
+        public static void Check(NativeResult result, object module, string funcName = "", bool needthrowerror = false)
         {
+#if !UNITY_EDITOR
             if (result == NativeResult.Success)
             {
                 return;
@@ -41,6 +42,14 @@ namespace NRKernal
                             throw new NRSdkVersionMismatchError(module_tag + "SDK version mismatch error!");
                         case NativeResult.SdcardPermissionDeny:
                             throw new NRSdcardPermissionDenyError(module_tag + "Sdcard permission deny error!");
+                        case NativeResult.RGBCameraDeviceNotFind:
+                            throw new NRRGBCameraDeviceNotFindError(module_tag + "Can not find the rgb camera device error!");
+                        case NativeResult.DPDeviceNotFind:
+                            throw new NRDPDeviceNotFindError(module_tag + "Can not find the dp device error!");
+                        case NativeResult.GetDisplayFailure:
+                            throw new NRDPDeviceNotFindError(module_tag + "Can not find the glasses display!");
+                        case NativeResult.GetDisplayModeMismatch:
+                            throw new NRDPDeviceNotFindError(module_tag + "Glasses display mode mismatch!");
                         default:
                             break;
                     }
@@ -55,6 +64,7 @@ namespace NRKernal
             {
                 Debug.LogError(module_tag + result.ToString());
             }
+#endif
         }
     }
 }

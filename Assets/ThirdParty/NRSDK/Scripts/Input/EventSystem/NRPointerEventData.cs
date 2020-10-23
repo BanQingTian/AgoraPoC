@@ -45,14 +45,7 @@ namespace NRKernal
             }
             else
             {
-                if(NRInput.GetControllerType() == ControllerType.CONTROLLER_TYPE_NREALLIGHT)
-                {
-                    return NRInput.GetButton(raycaster.RelatedHand, ControllerButton.TRIGGER) || NRInput.GetButton(raycaster.RelatedHand, ControllerButton.APP);
-                }
-                else
-                {
-                    return NRInput.GetButton(raycaster.RelatedHand, ControllerButton.TRIGGER);
-                }
+                return NRInput.GetButton(raycaster.RelatedHand, ControllerButton.TRIGGER);
             }
         }
 

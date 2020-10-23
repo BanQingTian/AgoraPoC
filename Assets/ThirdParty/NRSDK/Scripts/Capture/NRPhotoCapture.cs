@@ -28,8 +28,9 @@ namespace NRKernal.Record
                 {
                     var resolutions = new List<Resolution>();
                     var resolution = new Resolution();
-                    resolution.width = NRRgbCamera.Resolution.width;
-                    resolution.height = NRRgbCamera.Resolution.height;
+                    var rgbcamera_resolution = NRDevice.Instance.GetRGBCameraResolution();
+                    resolution.width = rgbcamera_resolution.width;
+                    resolution.height = rgbcamera_resolution.height;
                     resolutions.Add(resolution);
                     m_SupportedResolutions = resolutions;
                 }
@@ -72,7 +73,7 @@ namespace NRKernal.Record
         /// </summary>
         public IntPtr GetUnsafePointerToVideoDeviceController()
         {
-            Debug.LogWarning("[NRPhotoCapture] Interface not supported...");
+            NRDebugger.LogWarning("[NRPhotoCapture] Interface not supported...");
             return IntPtr.Zero;
         }
 
@@ -103,7 +104,7 @@ namespace NRKernal.Record
         {
             while (!this.m_CaptureContext.GetFrameProvider().IsFrameReady())
             {
-                Debug.LogFormat("Wait for the frame ready!");
+                NRDebugger.LogFormat("Wait for the frame ready!");
                 yield return new WaitForEndOfFrame();
             }
             callback?.Invoke();

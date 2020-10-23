@@ -1,4 +1,4 @@
-﻿Shader "Unlit/CaptureScreen"
+﻿Shader "NRSDK/CaptureScreen"
 {
 	Properties
 	{

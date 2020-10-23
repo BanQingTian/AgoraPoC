@@ -1,4 +1,13 @@
-﻿namespace NRKernal.Record
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/        
+* 
+*****************************************************************************/
+
+namespace NRKernal.Record
 {
     using NRKernal;
     using UnityEngine;
@@ -7,13 +16,13 @@
     public class EditorFrameProvider : AbstractFrameProvider
     {
         private Texture2D m_DefaultTexture;
-        private RGBTextureFrame m_DefaultFrame;
+        private CameraTextureFrame m_DefaultFrame;
         private bool m_IsPlay = false;
 
         public EditorFrameProvider()
         {
             m_DefaultTexture = Resources.Load<Texture2D>("Record/Textures/captureDefault");
-            m_DefaultFrame = new RGBTextureFrame();
+            m_DefaultFrame = new CameraTextureFrame();
             m_DefaultFrame.texture = m_DefaultTexture;
 
             NRKernalUpdater.Instance.StartCoroutine(UpdateFrame());

@@ -38,10 +38,15 @@ namespace NRKernal
             /// Track the rotation only.
             /// </summary>
             Tracking3Dof = 1,
+
+            /// <summary>
+            /// Track nothing.
+            /// </summary>
+            Tracking0Dof = 2,
         }
 
         [SerializeField]
-        private TrackingType m_TrackingType;
+        private TrackingType m_TrackingType = TrackingType.Tracking6Dof;
 
         public TrackingType TrackingMode
         {
@@ -68,62 +73,90 @@ namespace NRKernal
             rightCamera.cullingMask = 0;
             centerCamera.cullingMask = -1;
             centerCamera.depth = 1;
+#else
+            centerCamera.cullingMask = 0;
+            centerCamera.nearClipPlane = 0.3f;
+            centerCamera.farClipPlane = 0.5f;
+            centerCamera.clearFlags = CameraClearFlags.Nothing;
 #endif
             StartCoroutine(Initialize());
         }
 
-        void LateUpdate()
+        void OnEnable()
+        {
+            NRKernalUpdater.OnUpdate += OnUpdate;
+        }
+
+        void OnDisable()
+        {
+            NRKernalUpdater.OnUpdate -= OnUpdate;
+        }
+
+        void OnUpdate()
         {
             CheckHMDPoseState();
             UpdatePoseByTrackingType();
         }
 
-        private IEnumerator Initialize()
+        private void ChangeMode(TrackingType trackingtype)
         {
-            while (NRFrame.SessionStatus != SessionState.Running)
+            if (NRFrame.SessionStatus != SessionState.Running ||
+                trackingtype == m_TrackingType)
             {
-                Debug.Log("[NRHMDPoseTracker] Waitting to initialize.");
-                yield return new WaitForEndOfFrame();
+                return;
             }
 
-            //Debug.LogError("Distortion:" + NRFrame.GetRGBCameraDistortion().ToString());
-            //Debug.LogError("IntrinsicMatrix:" + NRFrame.GetRGBCameraIntrinsicMatrix().ToString());
+#if !UNITY_EDITOR
+            AsyncTaskExecuter.Instance.RunAction(() =>
+            {
+                var result = NRSessionManager.Instance.NativeAPI.NativeTracking.SwitchTrackingMode((TrackingMode)trackingtype);
+
+                if (result)
+                {
+                    NRFrame.ClearPose();
+                    m_TrackingType = trackingtype;
+                }
+            });
+#endif
+        }
+
+        public void ChangeTo6Dof() { ChangeMode(TrackingType.Tracking6Dof); }
+        public void ChangeTo3Dof() { ChangeMode(TrackingType.Tracking3Dof); }
+        public void ChangeTo0Dof() { ChangeMode(TrackingType.Tracking0Dof); }
+
+        private IEnumerator Initialize()
+        {
+            leftCamera.enabled = false;
+            rightCamera.enabled = false;
+            while (NRFrame.SessionStatus != SessionState.Running)
+            {
+                NRDebugger.Log("[NRHMDPoseTracker] Waitting to initialize.");
+                yield return new WaitForEndOfFrame();
+            }
 
 #if !UNITY_EDITOR
             bool result;
             var matrix_data = NRFrame.GetEyeProjectMatrix(out result, leftCamera.nearClipPlane, leftCamera.farClipPlane);
             if (result)
             {
+                leftCamera.enabled = true;
+                rightCamera.enabled = true;
                 leftCamera.projectionMatrix = matrix_data.LEyeMatrix;
                 rightCamera.projectionMatrix = matrix_data.REyeMatrix;
 
-                var eyeposFromHead = NRFrame.EyePosFromHead;
-                leftCamera.transform.localPosition = eyeposFromHead.LEyePose.position;
-                leftCamera.transform.localRotation = eyeposFromHead.LEyePose.rotation;
-                rightCamera.transform.localPosition = eyeposFromHead.REyePose.position;
-                rightCamera.transform.localRotation = eyeposFromHead.REyePose.rotation;
+                var eyeposeFromHead = NRFrame.EyePoseFromHead;
+                leftCamera.transform.localPosition = eyeposeFromHead.LEyePose.position;
+                leftCamera.transform.localRotation = eyeposeFromHead.LEyePose.rotation;
+                rightCamera.transform.localPosition = eyeposeFromHead.REyePose.position;
+                rightCamera.transform.localRotation = eyeposeFromHead.REyePose.rotation;
                 centerCamera.transform.localPosition = (leftCamera.transform.localPosition + rightCamera.transform.localPosition) * 0.5f;
                 centerCamera.transform.localRotation = Quaternion.Lerp(leftCamera.transform.localRotation, rightCamera.transform.localRotation, 0.5f);
             }
+#else
+            leftCamera.enabled = true;
+            rightCamera.enabled = true;
 #endif
-            Debug.Log("[NRHMDPoseTracker] Initialized success.");
-        }
-
-        /// <summary>
-        /// Get the real pose of device in unity world coordinate by "UseRelative".
-        /// </summary>
-        /// <param name="pose">Real pose of device.</param>
-        public void GetHeadPose(ref Pose pose)
-        {
-            if (NRFrame.SessionStatus != SessionState.Running)
-            {
-                pose.position = Vector3.zero;
-                pose.rotation = Quaternion.identity;
-                return;
-            }
-            var poseTracker = NRSessionManager.Instance.NRHMDPoseTracker;
-            pose.position = poseTracker.UseRelative ? gameObject.transform.localPosition : gameObject.transform.position;
-            pose.rotation = poseTracker.UseRelative ? gameObject.transform.localRotation : gameObject.transform.rotation;
+            NRDebugger.Log("[NRHMDPoseTracker] Initialized success.");
         }
 
         private void UpdatePoseByTrackingType()
@@ -147,11 +180,16 @@ namespace NRKernal
                     if (UseRelative)
                     {
                         transform.localRotation = pose.rotation;
+                        transform.localPosition = Vector3.zero;
                     }
                     else
                     {
                         transform.rotation = pose.rotation;
+                        transform.position = Vector3.zero;
                     }
+                    break;
+                case TrackingType.Tracking0Dof:
+
                     break;
                 default:
                     break;
@@ -163,10 +201,11 @@ namespace NRKernal
 
         private void CheckHMDPoseState()
         {
-            if (NRFrame.SessionStatus != SessionState.Running)
+            if (NRFrame.SessionStatus != SessionState.Running || TrackingMode != TrackingType.Tracking6Dof)
             {
                 return;
             }
+
             var currentReason = NRFrame.LostTrackingReason;
             // When LostTrackingReason changed.
             if (currentReason != m_LastReason)

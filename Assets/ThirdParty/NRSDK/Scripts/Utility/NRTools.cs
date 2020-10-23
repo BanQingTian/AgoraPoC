@@ -49,7 +49,11 @@ namespace NRKernal
 
         public static string GetTrackingImageDataGenPath()
         {
+#if UNITY_EDITOR
+            string path = Application.persistentDataPath + "/TrackingImageData/";
+#else
             string path = persistentDataPath + "/TrackingImageData/";
+#endif
             return path;
         }
 

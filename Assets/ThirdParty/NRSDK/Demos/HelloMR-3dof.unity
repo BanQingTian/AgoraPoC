@@ -154,7 +154,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1341636462457712, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_Name
-      value: NRLogo (2)
+      value: NRLogoRight
       objectReference: {fileID: 0}
     - target: {fileID: 4131315785955196, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -209,7 +209,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1341636462457712, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_Name
-      value: NRLogo (3)
+      value: NRLogoBack
       objectReference: {fileID: 0}
     - target: {fileID: 4131315785955196, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -328,6 +328,10 @@ Prefab:
       propertyPath: m_RootOrder
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1341636462457712, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
+      propertyPath: m_Name
+      value: NRLogoFront
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
   m_IsPrefabAsset: 0
@@ -428,7 +432,7 @@ Prefab:
       objectReference: {fileID: 0}
     - target: {fileID: 1341636462457712, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_Name
-      value: NRLogo (1)
+      value: NRLogoLeft
       objectReference: {fileID: 0}
     - target: {fileID: 4131315785955196, guid: b76c07b35799f964b88ea24bca4cbb08, type: 2}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -450,6 +454,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 911546669}
+  - component: {fileID: 911546670}
   m_Layer: 0
   m_Name: Slam3dofTest
   m_TagString: Untagged
@@ -474,6 +479,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 3
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &911546670
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_GameObject: {fileID: 911546668}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 23b22513ecb359649a034f9f596fe448, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_TrackingType: 1
 --- !u!1001 &1724904750
 Prefab:
   m_ObjectHideFlags: 0

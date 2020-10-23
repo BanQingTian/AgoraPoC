@@ -1,7 +1,16 @@
-﻿using UnityEngine;
+﻿/****************************************************************************
+* Copyright 2019 Nreal Techonology Limited. All rights reserved.
+*                                                                                                                                                          
+* This file is part of NRSDK.                                                                                                          
+*                                                                                                                                                           
+* https://www.nreal.ai/         
+* 
+*****************************************************************************/
 
 namespace NRKernal
 {
+    using UnityEngine;
+
     [HelpURL("https://developer.nreal.ai/develop/unity/customize-phone-controller")]
     public class NRMultiDisplayManager : MonoBehaviour
     {
@@ -11,9 +20,7 @@ namespace NRKernal
 
         private void Start()
         {
-#if !UNITY_STANDALONE_WIN
-            Init();
-#endif
+            NRSessionManager.Instance.AfterInitialized(Init);
         }
 
         private void Init()

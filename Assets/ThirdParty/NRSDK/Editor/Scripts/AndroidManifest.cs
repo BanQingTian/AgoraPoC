@@ -11,6 +11,7 @@ namespace NRKernal
 {
     using System.Text;
     using System.Xml;
+
     /// @cond EXCLUDE_FROM_DOXYGEN
     internal class AndroidXmlDocument : XmlDocument
     {
@@ -84,15 +85,25 @@ namespace NRKernal
                    "intent-filter/category/@android:name='android.intent.category.INFO']", nameSpaceManager);
         }
 
-        internal void SetExternalStorage()
+        internal void SetExternalStorage(bool flag)
         {
             var activity = SelectSingleNode("/manifest/application");
             var rightapplicationData = SelectSingleNode("/manifest/application[@android:requestLegacyExternalStorage='true']", nameSpaceManager);
 
-            if (rightapplicationData == null)
+            if (flag)
             {
-                XmlAttribute newAttribute = CreateAndroidAttribute("requestLegacyExternalStorage", "true");
-                activity.Attributes.Append(newAttribute);
+                if (rightapplicationData == null)
+                {
+                    XmlAttribute newAttribute = CreateAndroidAttribute("requestLegacyExternalStorage", "true");
+                    activity.Attributes.Append(newAttribute);
+                }
+            }
+            else
+            {
+                if (rightapplicationData != null)
+                {
+                    activity.Attributes.RemoveNamedItem("android:requestLegacyExternalStorage");
+                }
             }
         }
 

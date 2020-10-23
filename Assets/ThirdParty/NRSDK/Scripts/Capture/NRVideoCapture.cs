@@ -46,7 +46,7 @@ namespace NRKernal.Record
                     var resolutions = new List<Resolution>();
                     var resolution = new Resolution();
 #if !UNITY_EDITOR
-                    NativeResolution rgbResolution = NRDevice.Instance.NativeHMD.GetEyeResolution(NativeEye.RGB);
+                    NativeResolution rgbResolution = NRDevice.Instance.NativeHMD.GetEyeResolution((int)NativeEye.RGB);
 #else
                     NativeResolution rgbResolution = new NativeResolution(1280, 720);
 #endif
