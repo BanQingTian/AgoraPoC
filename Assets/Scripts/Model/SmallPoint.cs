@@ -21,6 +21,7 @@ public class SmallPoint : MonoBehaviour
     public string OnwerChannelName = "unity3d";
     public ZUIButton PointBtn;
     public Image Track;
+
     public Image Icon;
 
     public GameObject Btns;
@@ -29,6 +30,8 @@ public class SmallPoint : MonoBehaviour
     public ZUIButton TrackBtn;
 
     private Vector3 icon_btns_offset;
+
+    public VPlayerData m_Data;
 
     //data
     public string PlayerId { get; set; }
@@ -55,6 +58,13 @@ public class SmallPoint : MonoBehaviour
         TrackBtn.OnZCommonItemEnter += cancelLeaveLate;
         TrackBtn.OnZCommonItemExit += leaveLate;
 
+    }
+
+    public void SetData(VPlayerData data)
+    {
+        if (data == null) return;
+        m_Data = data;
+        Icon.sprite = data.Icon;
     }
 
     private void ShowDetailView()

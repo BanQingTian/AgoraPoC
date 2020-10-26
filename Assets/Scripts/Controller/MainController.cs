@@ -22,6 +22,7 @@ public class VPlayerData
     public string Name;
     public string Playerid;
     public string WorkNumber;
+    public string WorkType;
 }
 
 
@@ -101,6 +102,18 @@ public class MainController : MonoBehaviour
     }
 
     #endregion
+
+    public VPlayerData GetVirtualData()
+    {
+        if(VPS.Count == 0)
+        {
+            Debug.LogError("VPC.count == 0 !!!!");
+            return null;
+        }
+        VPlayerData data = VPS[0];
+        VPS.RemoveAt(0);
+        return data;
+    }
 
     #region UI Logic
 

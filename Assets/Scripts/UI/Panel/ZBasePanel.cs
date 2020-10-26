@@ -48,8 +48,8 @@ public class ZBasePanel : MonoBehaviour
     {
         Color c = new Color(1f, 0.66f, 0f, 1);
         m_VirtualMouse.GetComponent<Image>().color = c;
-        m_MouseHover.GetComponent<Image>().color = c;
-
+        m_VirtualMouse.GetComponent<Image>().sprite = m_MouseHover.GetComponent<Image>().sprite;
+        m_MouseHover.GetComponent<Image>().color = new Color(1,1,1,0);
     }
 
     public virtual void Hovering()
@@ -115,6 +115,7 @@ public class ZBasePanel : MonoBehaviour
         {
             MouseMove();
             m_MouseHover.gameObject.SetActive(ZCommonItem.BtnHovering);
+            m_VirtualMouse.gameObject.SetActive(!ZCommonItem.BtnHovering);
         }
     }
 }

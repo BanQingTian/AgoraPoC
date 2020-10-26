@@ -22,7 +22,7 @@ public class MapPanel : ZBasePanel
         Reset.OnZCommonItemUp += MapPlayBackwards;
     }
 
-    public void GetMapItem(string playerid)
+    public void GetMapItem(string playerid,VPlayerData data)
     {
         int count = CallerMapUsedDic.Count;
         if (count < celling)
@@ -33,6 +33,8 @@ public class MapPanel : ZBasePanel
                 sp.PlayerId = playerid;
                 sp.gameObject.SetActive(true);
                 CallerMapUsedDic.Add(playerid, sp);
+
+                sp.SetData(data);
             }
             return;
         }

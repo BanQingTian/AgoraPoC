@@ -69,7 +69,7 @@ public class LeftConnectionPanel : ZBasePanel
 
     }
 
-    public void AddCallerToList(/*CallerData data*/string playerid)
+    public void AddCallerToList(/*CallerData data*/string playerid,VPlayerData data)
     {
         if (ItemDic.ContainsKey(playerid))
         {
@@ -79,6 +79,10 @@ public class LeftConnectionPanel : ZBasePanel
 
         var p = GameObject.Instantiate<IconItemLeft>(IconItemPrefab);
         p.AddListener();
+
+        if (data != null)
+            p.SetData(data);
+
         p.transform.SetParent(IconLayoutParent);
         p.gameObject.SetActive(true);
         p.GetComponent<RectTransform>().localRotation = Quaternion.identity;

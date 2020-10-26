@@ -12,6 +12,9 @@ public class CallerDetailItem : MonoBehaviour
     public Image Icon;
     public CallerPanel ParentsPanel;
     public ZUIButton Btn;
+
+    public VPlayerData m_data;
+
     public string PlayerId { get; set; }
 
     public void AddListener()
@@ -19,6 +22,16 @@ public class CallerDetailItem : MonoBehaviour
         Btn.OnZCommonItemUp += MoveToChannel_BtnClked;
         Btn.OnZCommonItemEnter += Enter;
         Btn.OnZCommonItemExit += Exit;
+    }
+
+    public void SetData(VPlayerData pd)
+    {
+        Debug.Log(pd.Icon.name + "===========");
+        m_data = pd;
+        Name.text = pd.Name;
+        JobNumber.text = pd.WorkNumber;
+        JobType.text = pd.WorkType;
+        Icon.sprite = pd.Icon;
     }
 
     private void Enter()

@@ -23,10 +23,13 @@ public class CallerPanel : ZBasePanel
     {
         Debug.Log("[CZLOG] player id is ---" + playerid);
 
-        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "fresh", "U OUT!"));
-
         var item = GameObject.Instantiate<CallerDetailItem>(ItemPrefab);
         item.AddListener();
+
+        var d = MainController.Instance.GetVirtualData();
+        if (d != null)
+            item.SetData(d);
+
         item.transform.SetParent(DetailLayoutParent);
         item.transform.localRotation = Quaternion.identity;
         item.transform.localScale = Vector3.one;
@@ -41,7 +44,7 @@ public class CallerPanel : ZBasePanel
 
 
         // 模拟加载地图数据
-        UIManager.Instance.MapP.GetMapItem(playerid);
+        UIManager.Instance.MapP.GetMapItem(playerid,d);
     }
 
     // caller offline
@@ -50,6 +53,8 @@ public class CallerPanel : ZBasePanel
         CallerDetailItem ci;
         if (CallerDic.TryGetValue(playerid, out ci))
         {
+            if (ci.m_data != null)
+                MainController.Instance.VPS.Add(ci.m_data);
             CallerDic.Remove(playerid);
             Destroy(ci.gameObject);
         }
@@ -80,7 +85,7 @@ public class CallerPanel : ZBasePanel
         // 告诉caller加入频道
         ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "join_channel", pid));
 
-        LeftConPanel.AddCallerToList(pid);
+        LeftConPanel.AddCallerToList(pid,CallerDic[pid].m_data);
 
         DeleteCaller(pid);
     }

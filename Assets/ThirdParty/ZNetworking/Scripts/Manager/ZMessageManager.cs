@@ -103,7 +103,12 @@ public class ZMessageManager
                     break;
             }
         }
+
+
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "fresh", "U OUT!"));
+
     }
+
 
     public void __Response_CommonMSG(object msg)
     {
