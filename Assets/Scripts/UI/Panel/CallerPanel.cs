@@ -23,6 +23,8 @@ public class CallerPanel : ZBasePanel
     {
         Debug.Log("[CZLOG] player id is ---" + playerid);
 
+        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "fresh", "U OUT!"));
+
         var item = GameObject.Instantiate<CallerDetailItem>(ItemPrefab);
         item.AddListener();
         item.transform.SetParent(DetailLayoutParent);

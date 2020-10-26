@@ -33,6 +33,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public ZCommonEventHandler OnZCommonItemUp;
     public ZCommonEventHandler OnZCommonItemEnter;
     public ZCommonEventHandler OnZCommonItemExit;
+    public ZCommonEventHandler OnZCommonItemHover;
 
     public bool isHovering = false;
     public bool isDowning = false; // 为了防止点中之后移动到button之外再回来，还会执行按钮的up函数
@@ -47,8 +48,8 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
 
     // 缩放比例
-    private float HoveringScaleValue = 1.1f;
-    private float PressScaleValue = 0.91f;
+    private float HoveringScaleValue = 1.2f;
+    private float PressScaleValue = 0.8f;
     // 缩放时间
     private float HoverScaleBackDuration = 0.2f;
     private float PressScaleBackDuration = 0.2f;
@@ -57,6 +58,15 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     // 默认比例
     private float defaultScaleValue;
 
+    public bool runOnceHoverEvent = false;
+    private void Update()
+    {
+        if (isHovering && runOnceHoverEvent)
+        {
+            runOnceHoverEvent = false;
+            OnZCommonItemHover?.Invoke();
+        }
+    }
 
     #region IPoint Handler
 
@@ -88,6 +98,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public void OnPointerEnter(PointerEventData eventData)
     {
+        runOnceHoverEvent = true;
         enterLogic();
     }
 
@@ -115,7 +126,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public virtual void enterLogic()
     {
         OnZCommonItemEnter?.Invoke();
-        hoverTime = 0;
         isHovering = true;
         BtnHovering = true;
 
@@ -182,19 +192,10 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
-    float hoverTime;
-    private void Update()
-    {
-        if (isHovering)
-        {
-            hoverTime += Time.deltaTime;
-        }
-    }
-
     private Tween m_ScaleTween;
-    private Tween GetScaleTween(float scale,float duration)
+    private Tween GetScaleTween(float scale, float duration)
     {
-        if(m_ScaleTween == null)
+        if (m_ScaleTween == null)
         {
             m_ScaleTween = NormalImage.rectTransform.DOScale(HoveringScaleValue, HoverScaleBackDuration).SetAutoKill(false).Pause();
         }

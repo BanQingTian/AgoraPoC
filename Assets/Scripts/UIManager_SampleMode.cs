@@ -20,6 +20,14 @@ public class UIManager_SampleMode : MonoBehaviour
         smcp_RegisterBtnEvent();
     }
 
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.R))
+        {
+            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}","join_channel", ZClient.Instance.PlayerID));
+        }
+    }
+
     public void OpenAudioModeUI()
     {
         smcp.OpenAudioModeUI();
@@ -28,6 +36,10 @@ public class UIManager_SampleMode : MonoBehaviour
     public void OpenVideoModeUI()
     {
         smcp.OpenVideoModeUI();
+    }
+    public void OpenDisconnectUI()
+    {
+        smcp.OpenDisconnectMode();
     }
 
     public void smcp_RegisterBtnEvent()

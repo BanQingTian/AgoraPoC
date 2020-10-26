@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 
-public class ZBtn : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
+public class ZBtn : MonoBehaviour, IPointerDownHandler, IPointerUpHandler,IPointerEnterHandler,IPointerExitHandler
 {
     public Image mImage;
 
@@ -14,12 +14,13 @@ public class ZBtn : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public Action ClkDown;
     public Action ClkUp;
+    public Action Enter;
+    public Action Exit;
 
     public void OnPointerDown(PointerEventData eventData)
     {
         ClkDown?.Invoke();
-
-        if (!ReferenceEquals(mImage.sprite, null))
+        if (!ReferenceEquals(mImage, null))
         {
             DefaultSprite = mImage.sprite;
         }
@@ -39,4 +40,13 @@ public class ZBtn : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
     }
 
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        Enter?.Invoke();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        Exit?.Invoke();
+    }
 }

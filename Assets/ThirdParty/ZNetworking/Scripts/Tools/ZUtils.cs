@@ -25,7 +25,8 @@ public static class ZUtils
 
     public static string GetIPAdress(string defaultAdress)
     {
-        string path = Application.persistentDataPath + "/IC_IPAdress.txt";
+        string path = Application.persistentDataPath + "/Nreal_IPAdress.txt";
+        Debug.Log(path);
         if (System.IO.File.Exists(path))
         {
             return System.IO.File.ReadAllText(path);

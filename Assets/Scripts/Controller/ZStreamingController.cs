@@ -119,6 +119,13 @@ public class ZStreamingController
         mRtcEngine.DisableVideoObserver();
     }
 
+    
+    public void MuteVoice(bool m)
+    {
+        m = !m;
+        mRtcEngine.GetAudioPlaybackDeviceManager().SetAudioPlaybackDeviceMute(m);
+    }
+
     public void MuteLocalAudioStream(bool mute)
     {
         mRtcEngine.MuteLocalAudioStream(mute);

@@ -161,6 +161,10 @@ public class LeftConnectionPanel : ZBasePanel
         AudioMode.SetActive(false);
         VideoMode.SetActive(false);
         SwitchMode.SetActive(true);
+        foreach (var item in ItemDic)
+        {
+            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "leave_channel", item.Key));
+        }
     }
 
 }

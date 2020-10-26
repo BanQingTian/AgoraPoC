@@ -26,7 +26,7 @@ public class ZBasePanel : MonoBehaviour
     private RectTransform m_MouseHover;
 
     [SerializeField, Header("模拟鼠标移动区域")]
-    private RectTransform m_RangeImage;
+    private Vector4 offset;
 
     private bool m_Hovering = false;
 
@@ -41,25 +41,7 @@ public class ZBasePanel : MonoBehaviour
 
     private void Start()
     {
-        initMouseRange();
         initMouseColor();
-    }
-
-    private void initMouseRange()
-    {
-        if (m_HoverExtraImage == null)
-        {
-            Debug.LogError("m_HoverExtraImage is null !!!!");
-            return;
-        }
-
-        float centerX = m_RangeImage.position.x;
-        float centerY = m_RangeImage.position.y;
-        float width = m_RangeImage.sizeDelta.x;
-        float height = m_RangeImage.sizeDelta.y;
-
-        rangeX = new Vector2(centerX - width / 2, centerX + width / 2);
-        rangeY = new Vector2(centerY - height / 2, centerY + height / 2);
     }
 
     private void initMouseColor()
@@ -122,8 +104,8 @@ public class ZBasePanel : MonoBehaviour
         }
 
         m_VirtualMouse.localPosition = new Vector3(
-            Mathf.Clamp(m_VirtualMouse.localPosition.x, rangeX.x, rangeX.y),
-            Mathf.Clamp(m_VirtualMouse.localPosition.y, rangeY.x, rangeX.y),
+            Mathf.Clamp(m_VirtualMouse.localPosition.x, offset.x, offset.y),
+            Mathf.Clamp(m_VirtualMouse.localPosition.y, offset.z, offset.w),
             m_VirtualMouse.localPosition.z);
     }
 

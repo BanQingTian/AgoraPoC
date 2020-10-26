@@ -84,6 +84,25 @@ public class ZMessageManager
         if (UIManager.Instance != null)
             UIManager.Instance.UpdateCallerPanel(player.PlayerId, true);
         // update ui === todo
+
+        if (ZMain.Instance.isMaster)
+        {
+            Debug.Log("==============="+MainController.Instance.Mode);
+            switch (MainController.Instance.Mode)
+            {
+                case CurMode.Video:
+                    ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "video_mode", "shelter"));
+                    break;
+                case CurMode.Audio:
+                    ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "audio_mode", "shelter"));
+                    break;
+                case CurMode.None:
+                    ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "none_mode", "shelter"));
+                    break;
+                default:
+                    break;
+            }
+        }
     }
 
     public void __Response_CommonMSG(object msg)

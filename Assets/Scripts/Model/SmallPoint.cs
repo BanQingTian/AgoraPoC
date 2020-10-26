@@ -42,15 +42,26 @@ public class SmallPoint : MonoBehaviour
 
     public void AddListener()
     {
-        PointBtn.OnZCommonItemUp += ShowDetailView;
+        PointBtn.OnZCommonItemEnter += ShowDetailView;
         FocusBtn.OnZCommonItemUp += Focus;
         AddBtn.OnZCommonItemUp += AddCallerToList;
         TrackBtn.OnZCommonItemUp += TrackRun;
+
+        PointBtn.OnZCommonItemExit += leaveLate;
+        FocusBtn.OnZCommonItemEnter += cancelLeaveLate;
+        FocusBtn.OnZCommonItemExit += leaveLate;
+        AddBtn.OnZCommonItemEnter += cancelLeaveLate;
+        AddBtn.OnZCommonItemExit += leaveLate;
+        TrackBtn.OnZCommonItemEnter += cancelLeaveLate;
+        TrackBtn.OnZCommonItemExit += leaveLate;
+
     }
 
     private void ShowDetailView()
     {
+        cancelLeaveLate();
         Btns.gameObject.SetActive(true);
+
         foreach (var item in UIManager.Instance.MapP.CallerMapUsedDic)
         {
             if (item.Key != PlayerId)
@@ -58,6 +69,29 @@ public class SmallPoint : MonoBehaviour
                 item.Value.Btns.gameObject.SetActive(false);
             }
         }
+    }
+
+    private void hideDetailView()
+    {
+        Btns.gameObject.SetActive(false);
+    }
+    private void cancelLeaveLate()
+    {
+        StopCoroutine("leaveLateCor");
+    }
+    private void leaveLate()
+    {
+        StopCoroutine("leaveLateCor");
+        StartCoroutine("leaveLateCor");
+    }
+    private IEnumerator leaveLateCor()
+    {
+        float time = 0;//time = 1
+        while ((time += Time.deltaTime) < 1)
+        {
+            yield return null;
+        }
+        hideDetailView();
     }
 
 
@@ -68,7 +102,7 @@ public class SmallPoint : MonoBehaviour
         PointBtn.transform.DOLocalMove(ItemZoomEndPos, 0.5f);
         Btns.transform.DOLocalMove(ItemZoomEndPos + icon_btns_offset, 0.5f);
 
-        UIManager.Instance.MapP.SyncAction = () => 
+        UIManager.Instance.MapP.SyncAction = () =>
         {
             PointBtn.transform.DOLocalMove(DefaultPos, 0.5f);
             Tween tween = Btns.transform.DOLocalMove(DefaultPos + icon_btns_offset, 0.5f);

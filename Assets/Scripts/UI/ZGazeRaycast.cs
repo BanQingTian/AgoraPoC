@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using NRKernal;
 
 public class ZGazeRaycast : MonoBehaviour
 {
@@ -13,7 +14,7 @@ public class ZGazeRaycast : MonoBehaviour
     {
         Raycast();
 
-        Debug.DrawRay(Origin.position, Origin.forward,Color.red);
+        Debug.DrawRay(Origin.position, Origin.forward, Color.red);
     }
 
 
@@ -23,9 +24,13 @@ public class ZGazeRaycast : MonoBehaviour
         if (Physics.Raycast(Origin.position, Origin.forward, out hit, 99999))
         {
             ZBasePanel bp = hit.transform.GetComponent<ZBasePanel>();
-            if (bp != null)
+            if (bp != null && !NRInput.GetButton(ControllerButton.TRIGGER))
             {
-                if(curBP!= null)
+                if(!NRInput.GetButton(ControllerButton.TRIGGER) || (curBP == null))
+                {
+
+                }
+                if (curBP != null)
                 {
                     curBP.HoverEnd();
                 }
@@ -36,11 +41,11 @@ public class ZGazeRaycast : MonoBehaviour
         }
         else
         {
-            if (find && curBP != null)
+            if (find && curBP != null && !NRInput.GetButton(ControllerButton.TRIGGER))
             {
                 curBP.HoverEnd();
                 find = false;
-                curBP = null; 
+                curBP = null;
             }
         }
     }

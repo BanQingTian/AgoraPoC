@@ -7,8 +7,27 @@ using UnityEngine.UI;
 using Zrime;
 #endif
 
+
+public enum CurMode
+{
+    Video,
+    Audio,
+    None,
+}
+
+[System.Serializable]
+public class VPlayerData
+{
+    public Sprite Icon;
+    public string Name;
+    public string Playerid;
+    public string WorkNumber;
+}
+
+
 public class MainController : MonoBehaviour
 {
+    public CurMode Mode = CurMode.None;
 
     public Text TOO;
 
@@ -35,6 +54,11 @@ public class MainController : MonoBehaviour
     // PLEASE KEEP THIS App ID IN SAFE PLACE
     // Get your own App ID at https://dashboard.agora.io/
     private string AppID = "d8579ada9246484eb4e80eb15af8bbfb";
+
+
+
+    [Space(24), SerializeField, Header("--------模拟数据-------")]
+    public List<VPlayerData> VPS = new List<VPlayerData>();
 
 
     #region Unity_Interface
@@ -185,6 +209,11 @@ public class MainController : MonoBehaviour
 
     #region Clk Handler
 
+    public void OnMuteVoiceBtnClk(bool m)
+    {
+        app.MuteVoice(m);
+    }
+
     public void OnSwitchCameraBtnClk()
     {
         Debug.Log("OnSwitchCameraBtnClk");
@@ -201,12 +230,14 @@ public class MainController : MonoBehaviour
     {
         joinChannel(false);
         ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "audio_mode", "shelter"));
+        Mode = CurMode.Audio;
     }
 
     public void OnVideoBtnClk()
     {
         joinChannel(true);
         ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "video_mode", "shelter"));
+        Mode = CurMode.Video;
     }
 
     public void OnLeaveBtnClk()
@@ -224,6 +255,7 @@ public class MainController : MonoBehaviour
 
             EnterChannel = false;
         }
+        Mode = CurMode.None;
     }
 
     #endregion
@@ -242,6 +274,9 @@ public class MainController : MonoBehaviour
             TOO.text += ZClient.Instance.PlayerID + "\n";
             TOO.text += arrs[1];
         }
+
+        Debug.LogError("====== " + arrs[0]);
+
         switch (arrs[0])
         {
             // 加入频道
@@ -256,7 +291,11 @@ public class MainController : MonoBehaviour
             case "leave_channel":
                 if (ZClient.Instance.PlayerID == arrs[1])
                 {
-                    OnLeaveBtnClk();
+                    // fresh ui
+                    if (UIManager_SampleMode.Instance != null)
+                    {
+                        UIManager_SampleMode.Instance.smcp.CloseChannel();
+                    }
                 }
                 break;
 
@@ -300,6 +339,7 @@ public class MainController : MonoBehaviour
             case "audio_mode": // for sample mode
                 if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
                 {
+                    Debug.Log(11111111111111111);
                     UIManager_SampleMode.Instance.OpenAudioModeUI();
                 }
                 break;
@@ -307,9 +347,19 @@ public class MainController : MonoBehaviour
             case "video_mode": // for sample mode
                 if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
                 {
+                    Debug.Log(2222222222222);
                     UIManager_SampleMode.Instance.OpenVideoModeUI();
                 }
                 break;
+
+            case "none_mode":
+                if (!ZMain.Instance.isMaster)
+                {
+                    Debug.Log(33333333333333);
+                    UIManager_SampleMode.Instance.OpenDisconnectUI();
+                }
+                break;
+
 
             default:
                 break;
