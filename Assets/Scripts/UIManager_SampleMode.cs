@@ -26,6 +26,10 @@ public class UIManager_SampleMode : MonoBehaviour
         {
             ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}","join_channel", ZClient.Instance.PlayerID));
         }
+        if (Input.GetKeyDown(KeyCode.A))
+        {
+            MainController.Instance.OnAudioBtnClk();
+        }
     }
 
     public void OpenAudioModeUI()

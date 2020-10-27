@@ -31,12 +31,12 @@ public class SampleModeCallerPanel : MonoBehaviour
         {
             if (!MainController.Instance.SomeOneIsSpeaking)
             {
-                ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", "shelter"));
+                ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", ZClient.Instance.PlayerID));
             }
         };
-        SpeakingBtn.ClkDown += () =>
+        SpeakingBtn.ClkUp += () =>
         {
-            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", "shelter"));
+            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", ZClient.Instance.PlayerID));
         };
         AudioCloseChannelBtn.ClkUp += CloseChannel;
 

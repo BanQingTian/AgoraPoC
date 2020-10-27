@@ -48,16 +48,16 @@ public class LeftConnectionPanel : ZBasePanel
         SwitchToVideoBtn.OnZCommonItemUp += SwitchToVideo;
         SpeakingBtn.OnZCommonItemDown += () => 
         {
-            if (ItemDic.Count == 0) return;
+            if (ItemDic.Count == 0) return; 
             if (!MainController.Instance.SomeOneIsSpeaking)
             {
-                ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", "shelter"));
+                ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", ZClient.Instance.PlayerID));
             }
         };
         SpeakingBtn.OnZCommonItemUp += () => 
         {
             if (ItemDic.Count == 0) return;
-            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", "shelter"));
+            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", ZClient.Instance.PlayerID));
         };
         CloseBtn1.OnZCommonItemUp += QuitChannel;
 

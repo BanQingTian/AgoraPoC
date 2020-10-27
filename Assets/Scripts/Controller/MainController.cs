@@ -105,7 +105,7 @@ public class MainController : MonoBehaviour
 
     public VPlayerData GetVirtualData()
     {
-        if(VPS.Count == 0)
+        if (VPS.Count == 0)
         {
             Debug.LogError("VPC.count == 0 !!!!");
             return null;
@@ -288,8 +288,6 @@ public class MainController : MonoBehaviour
             TOO.text += arrs[1];
         }
 
-        Debug.LogError("====== " + arrs[0]);
-
         switch (arrs[0])
         {
             // 加入频道
@@ -323,19 +321,21 @@ public class MainController : MonoBehaviour
 
             // 发言ing
             case "open_speaking":
-                if (ZClient.Instance.PlayerID == msg.PlayerId)
+                SomeOneIsSpeaking = true;
+                if (ZClient.Instance.PlayerID == arrs[1])
                 {
+                    Debug.LogError("open_speaking");
                     app.MuteLocalAudioStream(false);
-                    SomeOneIsSpeaking = true;
                 }
                 break;
 
             // 结束发言
             case "close_speaking":
-                if (ZClient.Instance.PlayerID == msg.PlayerId)
+                SomeOneIsSpeaking = false;
+                if (ZClient.Instance.PlayerID == arrs[1])
                 {
+                    Debug.LogError("close_speaking");
                     app.MuteLocalAudioStream(true);
-                    SomeOneIsSpeaking = false;
                 }
                 break;
 
@@ -350,17 +350,15 @@ public class MainController : MonoBehaviour
                 break;
 
             case "audio_mode": // for sample mode
-                if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
+                if (!ZMain.Instance.isMaster)
                 {
-                    Debug.Log(11111111111111111);
                     UIManager_SampleMode.Instance.OpenAudioModeUI();
                 }
                 break;
 
             case "video_mode": // for sample mode
-                if (ZClient.Instance.PlayerID != msg.PlayerId && !ZMain.Instance.isMaster)
+                if (!ZMain.Instance.isMaster)
                 {
-                    Debug.Log(2222222222222);
                     UIManager_SampleMode.Instance.OpenVideoModeUI();
                 }
                 break;
