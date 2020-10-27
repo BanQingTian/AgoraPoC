@@ -25,6 +25,10 @@ public enum HoverMode
     /// 动画加hover图标出现
     /// </summary>
     AnimationAndExtra,
+    /// <summary>
+    /// 动画加hover出现，移除holdon
+    /// </summary>
+    AnimationAndReplace,
 }
 
 public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler, IPointerEnterHandler, IPointerExitHandler
@@ -45,6 +49,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public Image NormalImage;
     public Image HoverImage;
     public Image PressedImage;
+    public Image HoldOnImage;
 
 
     // 缩放比例
@@ -160,6 +165,16 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(true);
                 break;
+
+            case HoverMode.AnimationAndReplace:
+                NormalImage.rectTransform.DOScale(HoveringScaleValue, 0.2f);
+                if (HoverImage != null && HoldOnImage != null)
+                {
+                    HoverImage.gameObject.SetActive(true);
+                    HoldOnImage.gameObject.SetActive(false);
+                }
+                break;
+
         }
     }
 
@@ -195,6 +210,16 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 NormalImage.rectTransform.DOScale(1, 0.2f);
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(false);
+                break;
+
+            case HoverMode.AnimationAndReplace:
+                NormalImage.rectTransform.DOScale(1, 0.2f);
+                if(HoverImage!=null && HoldOnImage != null)
+                {
+                    HoverImage.gameObject.SetActive(false);
+                    HoldOnImage.gameObject.SetActive(true);
+                }
+
                 break;
         }
     }

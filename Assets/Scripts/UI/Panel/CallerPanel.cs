@@ -10,12 +10,41 @@ public class CallerPanel : ZBasePanel
     public Transform DetailLayoutParent;
     public CallerDetailItem ItemPrefab;
     public Dictionary<string, CallerDetailItem> CallerDic = new Dictionary<string, CallerDetailItem>();
+    public List<CallerDetailItem> CallerList = new List<CallerDetailItem>();
 
     public ZUIButton BackBtn;
+    public ZUIButton ComfirmBtn;
+
+    public Dictionary<string, VPlayerData> ReadyList = new Dictionary<string, VPlayerData>();
+
+    public List<GameObject> lines = new List<GameObject>();
 
     public void AddListener()
     {
         BackBtn.OnZCommonItemUp += Back;
+        ComfirmBtn.OnZCommonItemUp += TogetherAdd;
+    }
+
+    public void LineShow()
+    {
+        int c = CallerDic.Count;
+        if (c > 3)
+            c = 2;
+        for (int i = 0; i < c; i++)
+        {
+            lines[i].SetActive(true);
+        }
+    }
+    public void LineHide(int index)
+    {
+        if (index < 3)
+        {
+            lines[index].SetActive(false);
+            if (index - 1 >= 0)
+            {
+                lines[index - 1].SetActive(false);
+            }
+        }
     }
 
     // 上线但没有在频道里列表
@@ -41,7 +70,7 @@ public class CallerPanel : ZBasePanel
         item.PlayerId = playerid;
 
         CallerDic.Add(playerid, item);
-
+        CallerList.Add(item);
 
         // 模拟加载地图数据
         UIManager.Instance.MapP.GetMapItem(playerid,d);
@@ -56,6 +85,7 @@ public class CallerPanel : ZBasePanel
             if (ci.m_data != null)
                 MainController.Instance.VPS.Add(ci.m_data);
             CallerDic.Remove(playerid);
+            CallerList.Remove(ci);
             Destroy(ci.gameObject);
         }
         else
@@ -70,12 +100,23 @@ public class CallerPanel : ZBasePanel
         if (CallerDic.TryGetValue(playerid, out ci))
         {
             CallerDic.Remove(playerid);
+            CallerList.Remove(ci);
             Destroy(ci.gameObject);
         }
         else
         {
             Debug.LogError("[CZLOG] Don't contain this player id ---" + playerid);
         }
+    }
+
+    public void TogetherAdd()
+    {
+        foreach (var item in ReadyList)
+        {
+            MoveCallerToChannel(item.Key);
+        }
+        ReadyList.Clear();
+        Back();
     }
 
 

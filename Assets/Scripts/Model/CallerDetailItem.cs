@@ -5,13 +5,19 @@ using UnityEngine.UI;
 
 public class CallerDetailItem : MonoBehaviour
 {
-    public Text Name;
-    public Text JobNumber;
+    public TMPro.TextMeshProUGUI Name;
+    public TMPro.TextMeshProUGUI JobNumber;
     public Text JobType;
 
     public Image Icon;
     public CallerPanel ParentsPanel;
     public ZUIButton Btn;
+
+    private bool add = false;
+    public Image Tick_Normal;
+    public Image Tick_Normal_Parent;
+    public Image Tick_Hover;
+
 
     public VPlayerData m_data;
 
@@ -19,7 +25,7 @@ public class CallerDetailItem : MonoBehaviour
 
     public void AddListener()
     {
-        Btn.OnZCommonItemUp += MoveToChannel_BtnClked;
+        Btn.OnZCommonItemUp += AddToReadyListUntilClkConfirm;
         Btn.OnZCommonItemEnter += Enter;
         Btn.OnZCommonItemExit += Exit;
     }
@@ -28,37 +34,64 @@ public class CallerDetailItem : MonoBehaviour
     {
         Debug.Log(pd.Icon.name + "===========");
         m_data = pd;
-        Name.text = pd.Name;
-        JobNumber.text = pd.WorkNumber;
+        string nN = "";
+        for (int i = 0; i < pd.Name.Length; i++)
+        {
+            if (i == 0) continue;
+            nN += pd.Name[i];
+        }
+        Name.text = string.Format("<b>{0}</b> {1}", pd.Name[0], nN);
+        JobNumber.text = "ID " + pd.WorkNumber;
         JobType.text = pd.WorkType;
         Icon.sprite = pd.Icon;
     }
 
     private void Enter()
     {
-        SetTextColor(Color.black);
+        for (int i = 0; i < ParentsPanel.CallerList.Count; i++)
+        {
+            if (ParentsPanel.CallerList[i].PlayerId == PlayerId)
+            {
+                ParentsPanel.LineHide(i);
+            }
+        }
     }
     private void Exit()
     {
-        SetTextColor(Color.white);
-    }
-    private void SetTextColor(Color c)
-    {
-        Name.color = c;
-        JobNumber.color = c;
-        JobType.color = c;
+        ParentsPanel.LineShow();
     }
 
-    public void SetName(string callerName)
+    public void AddToReadyListUntilClkConfirm()
     {
-        Name.text = callerName;
-    }
+        add = !add;
+        Tick_Normal.gameObject.SetActive((add));
+        Tick_Normal_Parent.color = add ? new Color(1, 0.63f, 0.149f, 1) : Color.white;
+        Tick_Hover.gameObject.SetActive((add));
 
-    public void SetIcon(Sprite s)
-    {
-        Icon.sprite = s;
-    }
+        if (add)
+        {
+            if (!ParentsPanel.ReadyList.ContainsKey(PlayerId))
+            {
+                ParentsPanel.ReadyList.Add(PlayerId, m_data);
+            }
+            else
+            {
+                Debug.LogError("ParentsPanel.ReadyList.ContainsKey(PlayerId) == true");
+            }
+        }
+        else
+        {
+            if (ParentsPanel.ReadyList.ContainsKey(PlayerId))
+            {
+                ParentsPanel.ReadyList.Remove(PlayerId);
+            }
+            else
+            {
+                Debug.LogError("ParentsPanel.ReadyList.ContainsKey(PlayerId) == false");
+            }
+        }
 
+    }
     public void MoveToChannel_BtnClked()
     {
         ParentsPanel.MoveCallerToChannel(PlayerId);
