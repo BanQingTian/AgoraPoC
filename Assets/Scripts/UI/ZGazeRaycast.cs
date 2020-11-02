@@ -12,6 +12,7 @@ public class ZGazeRaycast : MonoBehaviour
 
     private void Update()
     {
+        return;
         Raycast();
 
         Debug.DrawRay(Origin.position, Origin.forward, Color.red);

@@ -10,7 +10,9 @@ public class SmallView : MonoBehaviour
     private RawImage m_Image;
     [SerializeField]
     private uint m_Uid;
-    private Texture defaultTex = null;
+    public Texture defaultTex = null;
+
+    public string ChannelName;
 
     private bool isDirty = false;
 
@@ -53,7 +55,16 @@ public class SmallView : MonoBehaviour
             s.enabled = true;
             s.SetEnable(true);
         }
-
+    }
+    public void CloseVideoRenderer()
+    {
+        var s = Image.gameObject.GetComponent<VideoSurface>();
+        if (s != null)
+        {
+            s.enabled = false;
+            s.SetEnable(false);
+        }
+        m_Image.texture = defaultTex;
     }
 
     public void Release()
@@ -72,17 +83,18 @@ public class SmallView : MonoBehaviour
 
     public void LoadVideSurface()
     {
-        Debug.Log("[CZLOG]  LoadVideSurface: uid = " + m_Uid + "UseVideo : " + MainController.Instance.UseVideo);
-
+        if (defaultTex == null)
+            defaultTex = m_Image.texture;
         var sv = Image.gameObject.AddComponent<VideoSurface>();
         if (!ReferenceEquals(sv, null))
         {
-            sv.enabled = MainController.Instance.UseVideo;
+            sv.enabled = true;
             // configure videoSurface
-            sv.SetForUser(m_Uid);
-            sv.SetEnable(MainController.Instance.UseVideo);
-            sv.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            sv.SetGameFps(30);
+            //sv.SetForUser(m_Uid);
+            //sv.SetEnable(true);
+            //sv.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+            //sv.SetGameFps(30);
+            sv.SetForMultiChannelUser(ChannelName, m_Uid);
         }
 
     }

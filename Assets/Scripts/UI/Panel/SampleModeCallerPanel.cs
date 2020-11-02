@@ -31,12 +31,12 @@ public class SampleModeCallerPanel : MonoBehaviour
         {
             if (!MainController.Instance.SomeOneIsSpeaking)
             {
-                ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", ZClient.Instance.PlayerID));
+                //ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "open_speaking", ZClient.Instance.PlayerID));
             }
         };
         SpeakingBtn.ClkUp += () =>
         {
-            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", ZClient.Instance.PlayerID));
+            //ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "close_speaking", ZClient.Instance.PlayerID));
         };
         AudioCloseChannelBtn.ClkUp += CloseChannel;
 
@@ -87,7 +87,7 @@ public class SampleModeCallerPanel : MonoBehaviour
 
     public void CloseChannel()
     {
-        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "leave_channel_pass_sample_mode", ZClient.Instance.PlayerID));
+        //ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "leave_channel_pass_sample_mode", ZClient.Instance.PlayerID));
         ConnectLabel.text = "· 未连接";
         MainController.Instance.OnLeaveBtnClk();
         OpenDisconnectMode();

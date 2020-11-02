@@ -33,21 +33,19 @@ namespace agora_gaming_rtc
         private Texture2D nativeTexture;
         private bool initRenderMode = false;
         private VideoRender videoRender = null;
-        private uint gameFps = 4;
+        private uint videoFilter = 15; // 15 fix me according to the real video frame rate.
         private uint updateVideoFrameCount = 0;
-        private bool _enableFlipHorizontal = false;
-        private bool _enableFlipVertical = false;
-
-        [SerializeField]
-        AgoraVideoSurfaceType VideoSurfaceType = AgoraVideoSurfaceType.Renderer;
-
+        public bool isMultiChannelWant = false;
         /* only one of the following should be set, depends on VideoSurfaceType */
         private Renderer mRenderer = null;
         private RawImage mRawImage = null;
         private bool _initialized = false;
-
-        private int textureid = 0; 
-
+        public bool _enableFlipHorizontal = false;
+        public bool _enableFlipVertical = false;
+        public uint videoFps = 30; 
+        [SerializeField]
+        AgoraVideoSurfaceType VideoSurfaceType = AgoraVideoSurfaceType.Renderer;
+        
         void Start()
         {
             // render video
@@ -73,6 +71,10 @@ namespace agora_gaming_rtc
             }
             else
             {
+                #if UNITY_EDITOR
+                // this only applies to Editor, in case of material is too dark
+                UpdateShader();
+                #endif
                 _initialized = true;
             }
         }
@@ -80,8 +82,8 @@ namespace agora_gaming_rtc
         // Update is called once per frame
         void Update()
         {
-#if UNITY_STANDALONE_WIN || UNITY_EDITOR || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
-            if (updateVideoFrameCount >= gameFps)
+            #if UNITY_STANDALONE_WIN || UNITY_EDITOR || UNITY_EDITOR_OSX || UNITY_STANDALONE_OSX || UNITY_ANDROID || UNITY_IOS || UNITY_IPHONE
+            if (updateVideoFrameCount >= videoFps/videoFilter)
             {
                 updateVideoFrameCount = 0;
             }
@@ -92,7 +94,8 @@ namespace agora_gaming_rtc
             }
             // process engine messages (TODO: put in some other place)
             IRtcEngine engine = GetEngine();
-            if (engine == null || !_initialized)
+
+            if (engine == null || !_initialized || videoRender == null)
                 return;
 
             // render video
@@ -101,23 +104,26 @@ namespace agora_gaming_rtc
             {
                 // create texture if not existent
                 if (IsBlankTexture())
-                { 
-                    int tmpi = videoRender.UpdateVideoRawData(uid, data, ref defWidth, ref defHeight);
-
-                    if (tmpi == -1){
-                        //Debug.Log ("UpdateVideoRawData: uid mm= " + uid + " textureid= " + textureid );
-                        if(textureid>0){
-                            tmpi = videoRender.UpdateTexture(textureid, uid, data, ref  defWidth, ref defHeight);
-                            if (tmpi == -1){
-                                Debug.Log ("UpdateVideoRawData: UpdateTexture tex = " + textureid);
-                            }else{
-                                Debug.Log ("UpdateVideoRawData: UpdateTexture tex = " + textureid + " defWidth= " + defWidth + " defHeight= " + defHeight );
-                            }
+                {
+                    int tmpi = -1;
+                    if (isMultiChannelWant)
+                    {
+                        if (uid == 0)
+                        {
+                            tmpi = videoRender.UpdateVideoRawData(uid, data, ref defWidth, ref defHeight);
                         }
-                        return;
+                        else
+                        {
+                            tmpi = videoRender.UpdateVideoRawData(mChannelId, uid, data, ref defWidth, ref defHeight);    
+                        }
+                    }
+                    else
+                    {
+                        tmpi = videoRender.UpdateVideoRawData(uid, data, ref defWidth, ref defHeight);
                     }
 
-                    Debug.Log ("UpdateVideoRawData: uid = " + uid + " defWidth= " + defWidth + " defHeight= " + defHeight );
+                    if (tmpi == -1)
+                        return;
 
                     if (defWidth > 0 && defHeight > 0)
                     {
@@ -126,8 +132,6 @@ namespace agora_gaming_rtc
                             // create Texture in the first time update data
                             nativeTexture = new Texture2D((int)defWidth, (int)defHeight, TextureFormat.RGBA32, false);
                             nativeTexture.LoadRawTextureData(data, (int)defWidth * (int)defHeight * 4);
-                            FlipTextureHorizontal(nativeTexture);
-                            FlipTextureVertically(nativeTexture);
                             ApplyTexture(nativeTexture);
                             nativeTexture.Apply();
                         }
@@ -138,16 +142,34 @@ namespace agora_gaming_rtc
                     }
                 }
                 else
-                {       
-                    int width = 0;
-                    int height = 0;
-                    int tmpi = videoRender.UpdateVideoRawData(uid, data, ref width, ref height);
-                    if (tmpi == -1){
-                        Debug.Log ("UpdateVideoRawData:2 uid= " +uid);
+                { 
+                    if (nativeTexture == null)
+                    {
+                        Debug.LogError("You didn't initialize native texture, please remove native texture and initialize it by agora.");
                         return;
                     }
+      
+                    int width = 0;
+                    int height = 0;
+                    int tmpi = -1;
+                    if (isMultiChannelWant)
+                    {
+                        if (uid == 0)
+                        {
+                            tmpi = videoRender.UpdateVideoRawData(uid, data, ref width, ref height);
+                        }
+                        else
+                        {
+                            tmpi = videoRender.UpdateVideoRawData(mChannelId, mUid, data, ref width, ref height);
+                        }
+                    }
+                    else
+                    {
+                        tmpi = videoRender.UpdateVideoRawData(uid, data, ref width, ref height);
+                    }
 
-                     //Debug.Log ("UpdateVideoRawData: 2 uid = " + uid + " width= " + width + " height= " + height);
+                    if (tmpi == -1)
+                        return;
 
                     try
                     {
@@ -157,8 +179,6 @@ namespace agora_gaming_rtc
                             *  if width and height don't change ,we only need to update data for texture, do not need to create Texture.
                             */
                             nativeTexture.LoadRawTextureData(data, (int)width * (int)height * 4);
-                            FlipTextureHorizontal(nativeTexture);
-                            FlipTextureVertically(nativeTexture);
                             nativeTexture.Apply();
                         } else {
                             /* 
@@ -168,8 +188,6 @@ namespace agora_gaming_rtc
                             defHeight = height;
                             nativeTexture.Resize(defWidth, defHeight);
                             nativeTexture.LoadRawTextureData(data, (int)width * (int)height * 4);
-                            FlipTextureHorizontal(nativeTexture);
-                            FlipTextureVertically(nativeTexture);
                             nativeTexture.Apply();
                         }
                     }
@@ -186,15 +204,30 @@ namespace agora_gaming_rtc
                     ApplyTexture(null);
                 }
             }
-#endif
+            #endif
         }
 
         void OnDestroy()
         {
             Debug.Log("VideoSurface OnDestroy");
-            if (videoRender != null)
+
+            if (videoRender != null && IRtcEngine.QueryEngine() != null)
             {
-                videoRender.RemoveUserVideoInfo(mUid);
+                if (isMultiChannelWant)
+                {
+                    if (mUid == 0)
+                    {
+                        videoRender.RemoveUserVideoInfo(mUid);
+                    }
+                    else
+                    {
+                        videoRender.RemoveUserVideoInfo(mChannelId, mUid);
+                    }
+                }
+                else
+                {
+                    videoRender.RemoveUserVideoInfo(mUid);
+                }
             }
 
             if (data != IntPtr.Zero)
@@ -202,6 +235,13 @@ namespace agora_gaming_rtc
                 Marshal.FreeHGlobal(data);
                 data = IntPtr.Zero;
             }
+
+            if (nativeTexture != null)
+            {
+                Destroy(nativeTexture);
+                nativeTexture = null;
+            }
+            mRenderer = null;
         }
 
         /** Sets the video rendering frame rate.
@@ -214,13 +254,14 @@ namespace agora_gaming_rtc
         */
         public void SetGameFps(uint fps)
         {
-            gameFps = fps/15; // 15 fix me according to the real video frame rate.
+            videoFps = fps; 
         }
 
         // call this to render video stream from uid on this game object
-        /** Sets the local/remote video.
+        /** Sets the local or remote video.
         * 
         * @note 
+        * - Do not call this method and {@link agora_gaming_rtc.VideoSurface.SetForMultiChannelUser SetForMultiChannelUser} together.
         * - Ensure that you call this method in the main thread.
         * - Ensure that you call this method before binding VideoSurface.cs.
         * 
@@ -228,8 +269,41 @@ namespace agora_gaming_rtc
         */
         public void SetForUser(uint uid)
         {
+            if (IRtcEngine.QueryEngine() != null)
+            {
+                mUid = uid;
+                IRtcEngine.QueryEngine().GetVideoRender().AddUserVideoInfo(mUid, 0);
+            }
             mUid = uid;
             Debug.Log("Set uid " + uid + " for " + gameObject.name);
+        }
+
+
+        /** Sets the local or remote video of users in multiple channels.
+         *
+         * @note 
+         * - This method only applies to the multi-channel feature.
+         * - Do not call this method and {@link agora_gaming_rtc.VideoSurface.SetForUser SetForUser} together.
+         * - Ensure that you call this method in the main thread.
+         * - Ensure that you call this method before binding VideoSurface.cs.
+         * 
+         * @param channelId The channel name.
+         * @param uid The ID of the remote user, which is retrieved from {@link agora_gaming_rtc.OnUserJoinedHandler OnUserJoinedHandler}. The default value is 0, which means you can see the local video.
+         */
+
+        public void SetForMultiChannelUser(string channelId, uint uid)
+        { 
+            if (IRtcEngine.QueryEngine() != null)
+            {
+                isMultiChannelWant = true;
+                mUid = uid;
+                mChannelId = channelId;
+                IRtcEngine.QueryEngine().GetVideoRender().AddUserVideoInfo(mChannelId, mUid, 0);
+            }
+            else
+            {
+                Debug.LogError("Plear init agora engine first");
+            }
         }
 
         /** Enables/Disables the mirror mode when renders the Texture.
@@ -247,8 +321,16 @@ namespace agora_gaming_rtc
         */
         public void EnableFilpTextureApply(bool enableFlipHorizontal, bool enableFlipVertical)
         {
-            _enableFlipHorizontal = enableFlipHorizontal;
-            _enableFlipVertical = enableFlipVertical;
+            if (_enableFlipHorizontal != enableFlipHorizontal)
+            {
+                transform.localScale = new Vector3(-transform.localScale.x, transform.localScale.y, transform.localScale.z);
+                _enableFlipHorizontal = enableFlipHorizontal;
+            }
+            if (_enableFlipVertical != enableFlipVertical)
+            {
+                transform.localScale = new Vector3(transform.localScale.x, -transform.localScale.y, transform.localScale.z);
+                _enableFlipVertical = enableFlipVertical;
+            }
         }
 
         /** Set the video renderer type.
@@ -271,45 +353,6 @@ namespace agora_gaming_rtc
             mEnable = enable;
         }
 
-        private void FlipTextureHorizontal(Texture2D original)
-        {
-            if (_enableFlipHorizontal)
-            {
-                var originalPixels = original.GetPixels();
-                Color[] flipped_data = new Color[originalPixels.Length];
-                int width = original.width;
-                int height = original.height;
-                for (int x = 0; x < width; x++)
-                {
-                    for (int y = 0; y < height; y++)
-                    {
-                        flipped_data[x + y * width] = originalPixels[width - 1 - x + y * width];
-                    }
-                }
-                original.SetPixels(flipped_data);
-            }
-        }  
-
-        private void FlipTextureVertically(Texture2D original)
-        {
-            if (_enableFlipVertical)
-            {
-                var originalPixels = original.GetPixels();
-                Color[] newPixels = new Color[originalPixels.Length];
-                int width = original.width;
-                int rows = original.height;
-
-                for (int x = 0; x < width; x++)
-                {
-                    for (int y = 0; y < rows; y++)
-                    {
-                        newPixels[x + y * width] = originalPixels[x + (rows - y -1) * width];
-                    }
-                }
-                original.SetPixels(newPixels);
-            }
-        }
-
         private IRtcEngine GetEngine()
         {
             agora_gaming_rtc.IRtcEngine engine = agora_gaming_rtc.IRtcEngine.QueryEngine();
@@ -317,17 +360,7 @@ namespace agora_gaming_rtc
             {
                 videoRender = (VideoRender)engine.GetVideoRender();
                 videoRender.SetVideoRenderMode(VIDEO_RENDER_MODE.RENDER_RAWDATA);
-                textureid = videoRender.GenerateNativeTexture();
-                if (textureid > 0)
-                {
-                    videoRender.AddUserVideoInfo(mUid, (uint)textureid);
-                }
-                else
-                {
-                    videoRender.AddUserVideoInfo(mUid, 0);
-                }
-
-
+                videoRender.AddUserVideoInfo(mUid, 0);
                 initRenderMode = true;
             }
             return engine;
@@ -372,8 +405,25 @@ namespace agora_gaming_rtc
         private uint mUid = 0;
 
         /*
+         *
+         */
+        private string mChannelId = "_0_";    
+
+        /*
         *if disabled, then no rendering happens
         */
         private bool mEnable = true;
+
+        /*
+        *    Updates Shader to unlit on Editor (some Editor version has the default material that can be too dark.
+        */
+        private void UpdateShader()
+        {
+            MeshRenderer mesh = GetComponent<MeshRenderer>();
+            if (mesh != null)
+            {
+                mesh.material = new Material(Shader.Find("Unlit/Texture"));
+            }
+        }
     }
 }

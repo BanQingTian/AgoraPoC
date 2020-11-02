@@ -11,6 +11,8 @@ using NRKernal;
 ******************************************************/
 public class ZBasePanel : MonoBehaviour
 {
+    public bool Use = false;
+
     /// <summary>
     /// 选中该panel后额外出现的选中示意图
     /// </summary>
@@ -41,6 +43,7 @@ public class ZBasePanel : MonoBehaviour
 
     private void Start()
     {
+        if (!Use) return;
         initMouseColor();
     }
 
@@ -111,6 +114,8 @@ public class ZBasePanel : MonoBehaviour
 
     private void Update()
     {
+        if (!Use) return;
+
         if (m_Hovering)
         {
             MouseMove();

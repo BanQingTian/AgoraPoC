@@ -154,8 +154,8 @@ public class SmallPoint : MonoBehaviour
 
     public void AddCallerToList()
     {
-        //UIManager.Instance.LeftConPanel.AddCallerToList(PlayerId);
-        UIManager.Instance.CallerP.MoveCallerToChannel(PlayerId);
+        // UIManager.Instance.CallerP.MoveCallerToChannel(PlayerId);
+        MainController.Instance.JoinMultiChannel(OnwerChannelName);
     }
 
     public void SPDelete()

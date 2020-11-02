@@ -23,23 +23,21 @@ public class VPlayerData
     public string Playerid;
     public string WorkNumber;
     public string WorkType;
+    public string channelName;
 }
 
 
 public class MainController : MonoBehaviour
 {
-    public CurMode Mode = CurMode.None;
-
     public Text TOO;
 
     public static MainController Instance;
 
-    public bool EnterChannel = false;
-    public bool UseVideo = false;
-
     public List<SmallView> m_SmallViews = new List<SmallView>();
-    public List<uint> m_SmallViewsUid = new List<uint>();
     public Dictionary<uint, SmallView> SmallViewDic = new Dictionary<uint, SmallView>();
+
+
+    public Dictionary<string, AgoraChannelData> ChannelDataDic = new Dictionary<string, AgoraChannelData>();
 
     // Use this for initialization
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
@@ -47,7 +45,8 @@ public class MainController : MonoBehaviour
 #endif
     static ZStreamingController app = null;
 
-    private const string ChannelName = "chenzhuo";
+    private string CurChannelName;
+    private bool JoiningChannel = false;
 
     public bool SomeOneIsSpeaking = false;
 
@@ -83,6 +82,7 @@ public class MainController : MonoBehaviour
 
         CheckAppId();
 
+        InitLocalAgoraChannelData();
     }
 
     void OnApplicationPause(bool paused)
@@ -103,6 +103,40 @@ public class MainController : MonoBehaviour
 
     #endregion
 
+    // 注册默认的3组model
+    public void InitLocalAgoraChannelData()
+    {
+        ChannelDataDic.Add("nreal1", new AgoraChannelData("nreal1", UIManager.Instance.MapP.CallerMapItemPrefabs[0], m_SmallViews[0]));
+        ChannelDataDic.Add("nreal2", new AgoraChannelData("nreal2", UIManager.Instance.MapP.CallerMapItemPrefabs[1], m_SmallViews[1]));
+        ChannelDataDic.Add("nreal3", new AgoraChannelData("nreal3", UIManager.Instance.MapP.CallerMapItemPrefabs[2], m_SmallViews[2]));
+    }
+
+    //// 设置当前加入的频道名称， 用于后续加入成功保持数据使用
+    //public void SetCurJoinChannelName(string name)
+    //{
+    //    CurChannelName = name;
+    //    JoiningChannel = true;
+    //}
+    //// 获取当前选取的频道名称，获取后初始化状态
+    //public string GetCurChannelName()
+    //{
+    //    JoiningChannel = false;
+    //    return CurChannelName;
+    //}
+    //// 判断当前专题是否可以继续加入频道
+    //public bool GetJoinStatus()
+    //{
+    //    return JoiningChannel;
+    //}
+
+    public void JoinNewUser(string cn, uint uid)
+    {
+        var data = ChannelDataDic[cn];
+        data.SetUID(uid);
+        data.SV.SetUid(uid);
+        data.SV.LoadVideSurface();
+    }
+
     public VPlayerData GetVirtualData()
     {
         if (VPS.Count == 0)
@@ -115,7 +149,13 @@ public class MainController : MonoBehaviour
         return data;
     }
 
+    public void SetVideoMode(string channelName,bool openVideo)
+    {
+        ChannelDataDic[channelName].SV.OpenVideoMode();
+    }
+
     #region UI Logic
+
 
     public SmallView PickSmallView(uint uid)
     {
@@ -128,7 +168,6 @@ public class MainController : MonoBehaviour
             if (!m_SmallViews[i].Dirty)
             {
                 SmallViewDic.Add(uid, m_SmallViews[i]);
-                m_SmallViewsUid.Add(uid);
                 m_SmallViews[i].SetUid(uid);
                 m_SmallViews[i].LoadVideSurface();
                 return m_SmallViews[i];
@@ -141,18 +180,6 @@ public class MainController : MonoBehaviour
 
     public void SmallViewPlayMode(bool useV)
     {
-        //for (int i = 0; i < m_SmallViews.Count; i++)
-        //{
-        //    if (useV)
-        //    {
-        //        m_SmallViews[i].OpenVideoMode();
-        //    }
-        //    else
-        //    {
-        //        m_SmallViews[i].OpenAudioMode();
-        //    }
-        //}
-
         foreach (var item in SmallViewDic)
         {
             if (useV)
@@ -160,60 +187,6 @@ public class MainController : MonoBehaviour
             else
                 item.Value.OpenAudioMode();
         }
-    }
-
-    public void Refresh2(uint uid)
-    {
-        for (int i = 0; i < m_SmallViews.Count; i++)
-        {
-            if (m_SmallViews[i].GetUid() == uid)
-            {
-                m_SmallViews[i].Release();
-                break;
-            }
-        }
-    }
-    public void RefreshSmallView()
-    {
-        Debug.Log("[CZLOG] RefreshSmallView");
-
-        for (int i = 0; i < m_SmallViews.Count; i++)
-        {
-            m_SmallViews[i].Release();
-        }
-
-        SmallViewDic.Clear();
-
-        int count = m_SmallViewsUid.Count;
-        for (int i = 0; i < count; i++)
-        {
-            var uid = m_SmallViewsUid[i];
-
-            SmallViewDic.Add(uid, m_SmallViews[i]);
-            m_SmallViews[i].SetUid(uid);
-            m_SmallViews[i].LoadVideSurface();
-        }
-
-
-
-        //-------
-
-        //SmallViewDic.Clear();
-        //int count = m_SmallViewsUid.Count;
-        //for (int i = 0; i < m_SmallViews.Count; i++)
-        //{
-        //    if (i < count)
-        //    {
-        //        SmallViewDic.Add(m_SmallViewsUid[i], m_SmallViews[i]);
-        //        m_SmallViews[i].SetUid(m_SmallViewsUid[i]);
-        //        m_SmallViews[i].LoadVideSurface();
-        //    }
-        //    else
-        //    {
-        //        m_SmallViews[i].Release();
-        //    }
-        //}
-
     }
 
     #endregion
@@ -242,33 +215,28 @@ public class MainController : MonoBehaviour
     public void OnAudioBtnClk()
     {
         joinChannel(false);
-        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "audio_mode", "shelter"));
-        Mode = CurMode.Audio;
     }
 
     public void OnVideoBtnClk()
     {
         joinChannel(true);
-        ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "video_mode", "shelter"));
-        Mode = CurMode.Video;
     }
 
     public void OnLeaveBtnClk()
     {
-        if (!ReferenceEquals(app, null))
-        {
-            app.leave();
+        //if (!ReferenceEquals(app, null))
+        //{
+        //    app.leave();
 
-            foreach (var item in SmallViewDic)
-            {
-                item.Value.Release();
-            }
-            SmallViewDic.Clear();
-            m_SmallViewsUid.Clear();
+        //    foreach (var item in SmallViewDic)
+        //    {
+        //        item.Value.Release();
+        //    }
+        //    SmallViewDic.Clear();
 
-            EnterChannel = false;
-        }
-        Mode = CurMode.None;
+        //}
+
+        app.leave();
     }
 
     #endregion
@@ -381,6 +349,24 @@ public class MainController : MonoBehaviour
     #endregion
 
 
+    public void JoinMultiChannel(string channelname)
+    {
+        if (ReferenceEquals(app, null))
+        {
+            app = new ZStreamingController();
+            app.loadEngine(AppID);
+        }
+        app.JoinMultiChannel(channelname, true);
+    }
+    public void JoinChannelForAndroid(string cname)
+    {
+        if (ReferenceEquals(app, null))
+        {
+            app = new ZStreamingController();
+            app.loadEngine(AppID);
+        }
+        app.join(cname);
+    }
     private void joinChannel(bool useVideo = true)
     {
         if (ReferenceEquals(app, null))
@@ -388,7 +374,7 @@ public class MainController : MonoBehaviour
             app = new ZStreamingController();
             app.loadEngine(AppID);
         }
-        app.join(ChannelName, useVideo);
+        app.join(CurChannelName, useVideo);
     }
 
 

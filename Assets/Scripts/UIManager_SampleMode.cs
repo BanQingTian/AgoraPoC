@@ -1,14 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UIManager_SampleMode : MonoBehaviour
 {
     public static UIManager_SampleMode Instance;
 
+    public Button tmpJoinBtn;
+
     public SampleModeCallerPanel smcp;
 
-
+    public static string curChannelName = "nreal1";
 
     private void Awake()
     {
@@ -18,13 +21,19 @@ public class UIManager_SampleMode : MonoBehaviour
     private void Start()
     {
         smcp_RegisterBtnEvent();
+        tmpJoinBtn.onClick.AddListener(() => 
+        {
+            smcp.OpenVideoModeUI();
+            Debug.Log("join channel");
+            MainController.Instance.JoinChannelForAndroid(curChannelName);
+        });
     }
 
     private void Update()
     {
         if (Input.GetKeyDown(KeyCode.R))
         {
-            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}","join_channel", ZClient.Instance.PlayerID));
+            ZMessageManager.Instance.SendMsg(MsgId.__COMMON_MSG, string.Format("{0},{1}", "join_channel", ZClient.Instance.PlayerID));
         }
         if (Input.GetKeyDown(KeyCode.A))
         {

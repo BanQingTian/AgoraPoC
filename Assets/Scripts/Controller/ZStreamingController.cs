@@ -17,34 +17,29 @@ public class ZStreamingController
     private IStreamingProvider mStreamingProvider;
     public Text FrameCount;
 
-    private void ReceiveFrame(ExternalVideoFrame frame)
-    {
-        if (mRtcEngine != null)
-        {
-            int a = mRtcEngine.PushVideoFrame(frame);
-            Debug.Log("PushVideoFrame ret " + a);
-        }
-    }
 
-    // load agora engine
-    public void loadEngine(string appId)
+
+    public void JoinMultiChannel(string channelId, bool useVideo)
     {
-        // start sdk
-        Debug.Log("initializeEngine");
-        if (mRtcEngine != null)
-        {
-            Debug.Log("Engine exists. Please unload it first!");
+        Debug.Log("calling join (channel = " + channelId + ")");
+        if (mRtcEngine == null)
             return;
+        if (MainController.Instance.ChannelDataDic[channelId].AC == null)
+        {
+            MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId); 
         }
+        mRtcEngine.EnableVideo();
+        mRtcEngine.EnableVideoObserver();
 
-        // init engine
-        mRtcEngine = IRtcEngine.GetEngine(appId);
+        mRtcEngine.SetMultiChannelWant(true);
+        MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(true, true));
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
 
-        // enable log
-        mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
-#if UNITY_ANDROID
-        //mRtcEngine.setLogFile("/sdcard/log.log");
-#endif
+        MainController.Instance.ChannelDataDic[channelId].AC.Publish();
+
     }
 
     public void join(string channel, bool useVideo = true)
@@ -53,27 +48,6 @@ public class ZStreamingController
 
         if (mRtcEngine == null)
             return;
-
-        // set callbacks (optional)
-        mRtcEngine.OnRtcStats = (RtcStats stats) =>
-        {
-            string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
-                stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
-            Debug.Log(rtcStatsMessage);
-
-            int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
-            int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
-
-            string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
-            Debug.Log(mixingMessage);
-        };
-
-        mRtcEngine.OnError += (int error, string msg) =>
-        {
-            string description = IRtcEngine.GetErrorDescription(error);
-            string errorMessage = string.Format("onError callback {0} {1} {2}", error, msg, description);
-            Debug.Log(errorMessage);
-        };
 
         mRtcEngine.OnJoinChannelSuccess = onJoinChannelSuccess;
         mRtcEngine.OnUserJoined = onUserJoined;
@@ -85,16 +59,12 @@ public class ZStreamingController
         // allow camera output callback
         mRtcEngine.EnableVideoObserver();
 
-        if (!MainController.Instance.EnterChannel)
+        //if (!MainController.Instance.EnterChannel)
         {
-            MainController.Instance.EnterChannel = true;
+            //MainController.Instance.EnterChannel = true;
             // join channel
             mRtcEngine.JoinChannel(channel, null, 0);
         }
-
-        MainController.Instance.UseVideo = useVideo;
-
-        MainController.Instance.SmallViewPlayMode(MainController.Instance.UseVideo);
 
         Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", useVideo));
     }
@@ -119,7 +89,7 @@ public class ZStreamingController
         mRtcEngine.DisableVideoObserver();
     }
 
-    
+
     public void MuteVoice(bool m)
     {
         m = !m;
@@ -174,7 +144,18 @@ public class ZStreamingController
 
         view.OnLoad(mStreamingProvider);
     }
+    private void OnChannelStatus(string channelId, RtcStats stats)
+    {
+        string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
+                stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
+        Debug.Log(channelId + "==" + rtcStatsMessage);
 
+        int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
+        int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
+
+        //string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
+        //Debug.Log(mixingMessage);
+    }
     // implement engine callbacks
     private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
     {
@@ -182,31 +163,27 @@ public class ZStreamingController
         //GameObject textVersionGameObject = GameObject.Find("VersionText");
         //textVersionGameObject.GetComponent<Text>().text = "SDK Version : " + getSdkVersion();
     }
-
-    // When a remote user joined, this delegate will be called. Typically
-    // create a GameObject to render video on it
+    public void onUserJoined(string channelId, uint uid, int elapaed)
+    {
+        MainController.Instance.JoinNewUser(channelId, uid);
+    }
     private void onUserJoined(uint uid, int elapsed)
     {
         Debug.Log("[VideoStreamingController] onUserJoined:" + uid);
 
-        SmallView sv = MainController.Instance.PickSmallView(uid);
-
-
+        //SmallView sv = MainController.Instance.PickSmallView(uid);
     }
+    private void onUserOffline(string channelId, uint uid, USER_OFFLINE_REASON reason)
+    {
+        Debug.Log("[VideoStreamingController] onUserOffline:" + uid);
 
-    // When remote user is offline, this delegate will be called. Typically
-    // delete the GameObject for this user
+        MainController.Instance.ChannelDataDic[channelId].SV.Release();
+    }
     private void onUserOffline(uint uid, USER_OFFLINE_REASON reason)
     {
         Debug.Log("[VideoStreamingController] onUserOffline:" + uid);
 
-        if (MainController.Instance.m_SmallViewsUid.Contains(uid))
-        {
-            MainController.Instance.m_SmallViewsUid.Remove(uid);
-        }
 
-        //MainController.Instance.RefreshSmallView();
-        MainController.Instance.Refresh2(uid);
     }
 
     public void onSwitchCamera()
@@ -269,5 +246,35 @@ public class ZStreamingController
             mRtcEngine.SetVideoEncoderConfiguration(config);
         }
         //#endif
+    }
+
+    private void ReceiveFrame(ExternalVideoFrame frame)
+    {
+        if (mRtcEngine != null)
+        {
+            int a = mRtcEngine.PushVideoFrame(frame);
+            Debug.Log("PushVideoFrame ret " + a);
+        }
+    }
+
+    // load agora engine
+    public void loadEngine(string appId)
+    {
+        // start sdk
+        Debug.Log("initializeEngine");
+        if (mRtcEngine != null)
+        {
+            Debug.Log("Engine exists. Please unload it first!");
+            return;
+        }
+
+        // init engine
+        mRtcEngine = IRtcEngine.GetEngine(appId);
+
+        // enable log
+        mRtcEngine.SetLogFilter(LOG_FILTER.DEBUG | LOG_FILTER.INFO | LOG_FILTER.WARNING | LOG_FILTER.ERROR | LOG_FILTER.CRITICAL);
+#if UNITY_ANDROID
+        //mRtcEngine.setLogFile("/sdcard/log.log");
+#endif
     }
 }
