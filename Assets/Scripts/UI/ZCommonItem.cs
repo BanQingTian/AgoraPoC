@@ -86,7 +86,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         if ((int)Mode > 1)
         {
             NormalImage.rectTransform.DOScale(PressScaleValue, PressScaleBackDuration);
-            //GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayForward();
             NormalImage.rectTransform.DOScale(PressScaleValue, HoverScaleBackDuration);
         }
 
@@ -109,8 +108,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         if ((int)Mode > 1)
             NormalImage.rectTransform.DOScale(1, 0.2f);
-
-
 
         isDowning = false;
         BtnHovering = false;

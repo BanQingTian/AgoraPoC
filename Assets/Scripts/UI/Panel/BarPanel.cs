@@ -48,8 +48,18 @@ public class BarPanel : MonoBehaviour
     public void AddListener()
     {
         VideoBar.OnZCommonItemUp = VideoBarClked;
+        VideoBar.OnZCommonItemEnter = VideoBarEnter;
+        VideoBar.OnZCommonItemExit = VideoBarExit;
+
         MapBar.OnZCommonItemUp = MapBarClked;
+        MapBar.OnZCommonItemEnter = MapBarEnter;
+        MapBar.OnZCommonItemExit = MapBarExit;
+
         MemberBar.OnZCommonItemUp = MemberBarClked;
+        MemberBar.OnZCommonItemEnter = MemberBarEnter;
+        MemberBar.OnZCommonItemExit = MemberBarExit;
+
+
 
         VideoMoveCenter.OnDeselected += reset;
         MapMoveCenter.OnDeselected += reset;
@@ -67,6 +77,14 @@ public class BarPanel : MonoBehaviour
             MoveRange.SetActive(true);
         }
         isSelect = true;
+    }
+    public void VideoBarEnter()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.VIDEO);
+    }
+    public void VideoBarExit()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.VIDEO, false);
 
     }
     public void MapBarClked()
@@ -81,6 +99,14 @@ public class BarPanel : MonoBehaviour
         }
         isSelect = true;
     }
+    public void MapBarEnter()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.MAP);
+    }
+    public void MapBarExit()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.MAP, false);
+    }
     public void MemberBarClked()
     {
         if (!isSelect)
@@ -93,6 +119,16 @@ public class BarPanel : MonoBehaviour
         }
 
         isSelect = true;
+    }
+    public void MemberBarEnter()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.MEMBER);
+
+    }
+    public void MemberBarExit()
+    {
+        UIManager.Instance.PlayBarAnim(MOVEBAR.MEMBER, false);
+
     }
 
     private void reset()

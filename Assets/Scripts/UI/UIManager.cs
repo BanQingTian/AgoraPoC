@@ -3,6 +3,13 @@ using System.Collections.Generic;
 using UnityEngine;
 using NRKernal;
 
+public enum MOVEBAR
+{
+    MAP = 0,
+    MEMBER,
+    VIDEO,
+}
+
 public class UIManager : MonoBehaviour
 {
     public static UIManager Instance;
@@ -24,7 +31,7 @@ public class UIManager : MonoBehaviour
     public MemberPanel MemberP;
 
     public Transform Point;
-
+    public Animator Anim;
 
     private void Awake()
     {
@@ -69,6 +76,46 @@ public class UIManager : MonoBehaviour
         HintP.Part2.SetActive(true);
         yield return new WaitForSeconds(3f);
         HintP.gameObject.SetActive(false);
+    }
+
+    public void PlayBarAnim(MOVEBAR mb,bool enter = true)
+    {
+        switch (mb)
+        {
+            case MOVEBAR.MAP:
+                if (enter)
+                {
+                    Anim.Play("MoveAnim_Map");
+                }
+                else
+                {
+                    Anim.Play("MoveAnim_Map_Inverse");
+                }
+
+                break;
+            case MOVEBAR.MEMBER:
+                if (enter)
+                {
+                    Anim.Play("MoveAnim_Member");
+                }
+                else
+                {
+                    Anim.Play("MoveAnim_Member_Inverse");
+                }
+                break;
+            case MOVEBAR.VIDEO:
+                if (enter)
+                {
+                    Anim.Play("MoveAnim_Video");
+                }
+                else
+                {
+                    Anim.Play("MoveAnim_Video_Inverse");
+                }
+                break;
+            default:
+                break;
+        }
     }
 
     #endregion
