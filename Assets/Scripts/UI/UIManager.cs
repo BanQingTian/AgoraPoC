@@ -14,9 +14,14 @@ public class UIManager : MonoBehaviour
     public GazeTracker VirturlMouseHelper;
 
     [Space(12)]
+    public Transform MainPanel; // all ui parents
     public LeftConnectionPanel LeftConPanel;
     public CallerPanel CallerP;
     public MapPanel MapP;
+    public VideoPanel VideoP;
+    public BarPanel BarP;
+    public HintPanel HintP;
+    public MemberPanel MemberP;
 
     public Transform Point;
 
@@ -28,20 +33,48 @@ public class UIManager : MonoBehaviour
 
     private void Start()
     {
-        init();
+        // 移除手柄的模型
+        NRInput.ControllerVisualActive = false;
+
         LeftConPanel.AddListener();
         CallerP.AddListener();
         MapP.AddListener();
+        VideoP.AddListener();
+        BarP.AddListener();
+        HintP.AddListener();
+        MemberP.AddListener();
     }
 
 
-    private void init()
+    #region UILogic
+
+    public void OpenHintPanel(string name)
     {
-        // 移除手柄原因的模型
-        NRInput.ControllerVisualActive = false;
+        Debug.Log("OpenHintPanel(string name)");
+        HintP.Name.text = name;
+        StartCoroutine("Shoot");
+    }
+    public void HideHint()
+    {
+        StopCoroutine("Shoot");
+        HintP.gameObject.SetActive(false);
+    }
+    private IEnumerator Shoot()
+    {
+        HintP.gameObject.SetActive(true);
+        HintP.Part1.SetActive(true);
+        HintP.Part2.SetActive(false);
+        yield return new WaitForSeconds(0.7f);
+        HintP.Part1.SetActive(false);
+        HintP.Part2.SetActive(true);
+        yield return new WaitForSeconds(3f);
+        HintP.gameObject.SetActive(false);
     }
 
-    #region Logic
+    #endregion
+
+
+    #region Invalid
 
     public void UpdateCallerPanel(string playerid, bool add = true)
     {

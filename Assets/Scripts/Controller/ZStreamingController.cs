@@ -26,19 +26,27 @@ public class ZStreamingController
             return;
         if (MainController.Instance.ChannelDataDic[channelId].AC == null)
         {
-            MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId); 
+            MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId);
         }
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
 
         mRtcEngine.SetMultiChannelWant(true);
         MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(true, true));
-        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
+        //MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
         MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
         MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
         MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
 
-        MainController.Instance.ChannelDataDic[channelId].AC.Publish();
+        //foreach (var item in MainController.Instance.ChannelDataDic)
+        //{
+        //    if (item.Key != channelId && item.Value.AC != null)
+        //    {
+        //        item.Value.AC.Unpublish();
+        //    }
+        //}
+
+        //MainController.Instance.ChannelDataDic[channelId].AC.Publish();
 
     }
 
@@ -162,6 +170,19 @@ public class ZStreamingController
         Debug.Log("JoinChannelSuccessHandler: uid = " + uid);
         //GameObject textVersionGameObject = GameObject.Find("VersionText");
         //textVersionGameObject.GetComponent<Text>().text = "SDK Version : " + getSdkVersion();
+
+        if (UIManager_SampleMode.Instance != null)
+        {
+            var vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.GetComponent<VideoSurface>();
+            if (vs == null)
+            {
+                vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.AddComponent<VideoSurface>();
+            }
+            vs.SetEnable(true);
+            vs.SetForUser(0);
+            vs.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+            vs.SetGameFps(30);
+        }
     }
     public void onUserJoined(string channelId, uint uid, int elapaed)
     {

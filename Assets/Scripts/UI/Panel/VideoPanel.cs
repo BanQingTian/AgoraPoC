@@ -17,19 +17,39 @@ public class VideoPanel : ZBasePanel
 {
     public List<RectTransform> m_Views = new List<RectTransform>();
 
-    private ZViewMode mode = ZViewMode.SurroundMode;
+    public ZViewMode mode = ZViewMode.SurroundMode;
+
+    public ZUIButton SurroundBtnUnselect;
+    public GameObject SurroundBtnSelect;
+    public ZUIButton MainSubBtnUnselect;
+    public GameObject MainSubBtnSelect;
+
+    public GameObject MoveTip;
 
 
-    private void Start()
+    public void AddListener()
     {
-        //SetViewMode(ZViewMode.MainSubMode);
+        SurroundBtnUnselect.OnZCommonItemUp += SurroundBtnClked;
+        MainSubBtnUnselect.OnZCommonItemUp += MainSubBtnClked;
+
+        SurroundBtnClked();
     }
 
-
-    public ZViewMode GetViewMode()
+    public void SurroundBtnClked()
     {
-        return mode;
+        SurroundBtnSelect.SetActive(true);
+        MainSubBtnSelect.gameObject.SetActive(false);
+
+        SetViewMode(ZViewMode.SurroundMode);
     }
+    public void MainSubBtnClked()
+    {
+        SurroundBtnSelect.SetActive(false);
+        MainSubBtnUnselect.gameObject.SetActive(true);
+
+        SetViewMode(ZViewMode.MainSubMode);
+    }
+
     public void SetViewMode(ZViewMode m)
     {
         mode = m;
@@ -44,6 +64,9 @@ public class VideoPanel : ZBasePanel
                 m_Views[0].localScale = Vector3.one;
                 m_Views[1].localScale = Vector3.one;
                 m_Views[2].localScale = Vector3.one;
+
+                UIManager.Instance.BarP.SetVideoBarHoverMode(mode);
+
                 break;
 
 
@@ -56,7 +79,27 @@ public class VideoPanel : ZBasePanel
                 m_Views[0].localScale = Vector3.one;
                 m_Views[1].localScale = Vector3.one * 0.5f;
                 m_Views[2].localScale = Vector3.one * 0.5f;
+
+                UIManager.Instance.BarP.SetVideoBarHoverMode(mode);
+
                 break;
         }
+
+
+    }
+
+    public void SetMoveTip(bool b = true)
+    {
+        MoveTip.SetActive(b);
+    }
+
+    public Vector3 GetCenterPos()
+    {
+        return m_Views[0].position;
+    }
+    public Vector3 GetCenterRot()
+    {
+        Vector3 v = m_Views[0].rotation.eulerAngles;
+        return new Vector3(v.x, v.y, v.z-90);
     }
 }

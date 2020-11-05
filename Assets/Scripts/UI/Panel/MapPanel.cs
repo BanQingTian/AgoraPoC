@@ -11,18 +11,32 @@ public class MapPanel : ZBasePanel
     public RectTransform MapBg;
     public ZUIButton Reset;
 
+    public GameObject MoveTip;
+
     private bool m_Moving = false;
 
     public List<SmallPoint> CallerMapItemPrefabs = new List<SmallPoint>();
+    // key - channel name 
+    public Dictionary<string, SmallPoint> MapPointsDic = new Dictionary<string, SmallPoint>();
+
+
+
+    // invaild
     private const int celling = 3;
     public Dictionary<string, SmallPoint> CallerMapUsedDic = new Dictionary<string, SmallPoint>();
+
+
 
     public void AddListener()
     {
         Reset.OnZCommonItemUp += MapPlayBackwards;
+        for (int i = 0; i < CallerMapItemPrefabs.Count; i++)
+        {
+            MapPointsDic.Add(CallerMapItemPrefabs[i].OnwerChannelName, CallerMapItemPrefabs[i]);
+        }
     }
 
-    public void GetMapItem(string playerid,VPlayerData data)
+    public void GetMapItem(string playerid, VPlayerData data)
     {
         int count = CallerMapUsedDic.Count;
         if (count < celling)
@@ -46,7 +60,7 @@ public class MapPanel : ZBasePanel
         SmallPoint sp;
         if (CallerMapUsedDic.TryGetValue(playerid, out sp))
         {
-            sp.SPDelete(); 
+            sp.SPDelete();
             CallerMapUsedDic.Remove(playerid);
         }
     }
@@ -84,7 +98,7 @@ public class MapPanel : ZBasePanel
     {
         ShowResetBtn(false);
         MapBg.transform.DOScale(1, 0.5f);
-        MapBg.transform.DOLocalMove(new Vector3(0,0,0), 0.5f);
+        MapBg.transform.DOLocalMove(new Vector3(0, 0, 0), 0.5f);
         //mapScaleTween?.PlayBackwards();
         //mapPosTween?.PlayBackwards();
         ZoomChild();
@@ -117,52 +131,17 @@ public class MapPanel : ZBasePanel
         SyncAction = null;
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    public void Resize(float scaleValue, Vector3 centerPos, float time)
+    public void SetMoveTip(bool b = true)
     {
-        if (m_Moving)
-        {
-            Debug.LogError("[CZLOG] is moving !!!");
-            return;
-        }
-
-        float defaultScale = MapBg.localScale.x; // default 1:1:1
-        float defaultPosX = MapBg.localPosition.x;
-        float defaultPosY = MapBg.localPosition.y;
-
-        float scaleRate = (scaleValue - defaultScale) / time;
-        Vector2 posRate = new Vector2((centerPos.x - defaultPosX) / time, (centerPos.y - defaultPosY) / time);
-
-        StartCoroutine(ResizeCor(scaleRate, posRate, defaultScale + scaleValue, centerPos, time));
-    }
-    private IEnumerator ResizeCor(float scaleRate, Vector2 posRate, float endScale, Vector3 endPos, float time)
-    {
-        m_Moving = true;
-        float t = 0;
-        while (t < time)
-        {
-            MapBg.localPosition += new Vector3(posRate.x, posRate.y) * Time.deltaTime * m_Speed;
-            MapBg.localScale += Vector3.one * scaleRate * Time.deltaTime * m_Speed;
-            t += Time.deltaTime;
-            yield return null;
-        }
-
-        MapBg.localPosition = endPos;
-        MapBg.localScale = Vector3.one * endScale;
-
-        m_Moving = false;
+        MoveTip.SetActive(b);
     }
 
+    public Vector3 GetCenterPos()
+    {
+        return transform.position;
+    }
+    public Quaternion GetCenterRot()
+    {
+        return transform.rotation;
+    }
 }

@@ -82,7 +82,8 @@ public class MainController : MonoBehaviour
 
         CheckAppId();
 
-        InitLocalAgoraChannelData();
+        if (UIManager.Instance != null) // nreal versionS
+            InitLocalAgoraChannelData();
     }
 
     void OnApplicationPause(bool paused)
@@ -149,7 +150,7 @@ public class MainController : MonoBehaviour
         return data;
     }
 
-    public void SetVideoMode(string channelName,bool openVideo)
+    public void SetVideoMode(string channelName, bool openVideo)
     {
         ChannelDataDic[channelName].SV.OpenVideoMode();
     }
@@ -224,126 +225,7 @@ public class MainController : MonoBehaviour
 
     public void OnLeaveBtnClk()
     {
-        //if (!ReferenceEquals(app, null))
-        //{
-        //    app.leave();
-
-        //    foreach (var item in SmallViewDic)
-        //    {
-        //        item.Value.Release();
-        //    }
-        //    SmallViewDic.Clear();
-
-        //}
-
         app.leave();
-    }
-
-    #endregion
-
-
-    #region Msg handler
-
-    public void MsgHandler(Message msg)
-    {
-        // msg.Content = msgType,executor id,
-
-        var arrs = msg.Content.Split(',');
-        if (TOO != null)
-        {
-            TOO.text = arrs[0] + "\n";
-            TOO.text += ZClient.Instance.PlayerID + "\n";
-            TOO.text += arrs[1];
-        }
-
-        switch (arrs[0])
-        {
-            // 加入频道
-            case "join_channel":
-                if (ZClient.Instance.PlayerID == arrs[1])
-                {
-                    OnVideoBtnClk();
-                }
-                break;
-
-            // 离开频道
-            case "leave_channel":
-                if (ZClient.Instance.PlayerID == arrs[1])
-                {
-                    // fresh ui
-                    if (UIManager_SampleMode.Instance != null)
-                    {
-                        UIManager_SampleMode.Instance.smcp.CloseChannel();
-                    }
-                }
-                break;
-
-            case "leave_channel_pass_sample_mode":
-                {
-                    if (ZMain.Instance.isMaster)
-                    {
-                        UIManager.Instance.LeftConPanel.RemoveCallerToWaitingList(msg.PlayerId);
-                    }
-                }
-                break;
-
-            // 发言ing
-            case "open_speaking":
-                SomeOneIsSpeaking = true;
-                if (ZClient.Instance.PlayerID == arrs[1])
-                {
-                    Debug.LogError("open_speaking");
-                    app.MuteLocalAudioStream(false);
-                }
-                break;
-
-            // 结束发言
-            case "close_speaking":
-                SomeOneIsSpeaking = false;
-                if (ZClient.Instance.PlayerID == arrs[1])
-                {
-                    Debug.LogError("close_speaking");
-                    app.MuteLocalAudioStream(true);
-                }
-                break;
-
-            // 全部打开麦克风
-            case "open_all_local_voice":
-                app.MuteLocalAudioStream(false);
-                break;
-
-            // 全部关闭麦克风
-            case "mute_all_local_voice":
-                app.MuteLocalAudioStream(true);
-                break;
-
-            case "audio_mode": // for sample mode
-                if (!ZMain.Instance.isMaster)
-                {
-                    UIManager_SampleMode.Instance.OpenAudioModeUI();
-                }
-                break;
-
-            case "video_mode": // for sample mode
-                if (!ZMain.Instance.isMaster)
-                {
-                    UIManager_SampleMode.Instance.OpenVideoModeUI();
-                }
-                break;
-
-            case "none_mode":
-                if (!ZMain.Instance.isMaster)
-                {
-                    Debug.Log(33333333333333);
-                    UIManager_SampleMode.Instance.OpenDisconnectUI();
-                }
-                break;
-
-
-            default:
-                break;
-        }
-
     }
 
     #endregion

@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using agora_gaming_rtc;
+
 
 public class UIManager_SampleMode : MonoBehaviour
 {
@@ -10,6 +12,8 @@ public class UIManager_SampleMode : MonoBehaviour
     public Button tmpJoinBtn;
 
     public SampleModeCallerPanel smcp;
+
+    public WebCameraHelper CamHelper;
 
     public static string curChannelName = "nreal1";
 
@@ -26,6 +30,10 @@ public class UIManager_SampleMode : MonoBehaviour
             smcp.OpenVideoModeUI();
             Debug.Log("join channel");
             MainController.Instance.JoinChannelForAndroid(curChannelName);
+
+            
+
+            //CamHelper.Run();
         });
     }
 

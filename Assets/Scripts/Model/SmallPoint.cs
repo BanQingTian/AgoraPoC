@@ -19,6 +19,7 @@ public class SmallPoint : MonoBehaviour
 
     [Space(24)]
     public string OnwerChannelName = "unity3d";
+    public string Name;
     public ZUIButton PointBtn;
     public Image Track;
 
@@ -27,7 +28,14 @@ public class SmallPoint : MonoBehaviour
     public GameObject Btns;
     public ZUIButton FocusBtn;
     public ZUIButton AddBtn;
+    public ZUIButton TalkbackBtn;
     public ZUIButton TrackBtn;
+    public Image TalkbackIcon;
+    public Image AddIcon;
+    public Image FocusIcon;
+    public Image TrackIcon;
+
+    public TMPro.TextMeshProUGUI NameLabel;
 
     private Vector3 icon_btns_offset;
 
@@ -41,6 +49,7 @@ public class SmallPoint : MonoBehaviour
         AddListener();
         icon_btns_offset = Btns.transform.localPosition - transform.localPosition;
         DefaultPos = this.gameObject.GetComponent<RectTransform>().localPosition;
+        NameLabel.text = Name;
     }
 
     public void AddListener()
@@ -49,6 +58,7 @@ public class SmallPoint : MonoBehaviour
         FocusBtn.OnZCommonItemUp += Focus;
         AddBtn.OnZCommonItemUp += AddCallerToList;
         TrackBtn.OnZCommonItemUp += TrackRun;
+        TalkbackBtn.OnZCommonItemUp += TalkbackClked;
 
         PointBtn.OnZCommonItemExit += leaveLate;
         FocusBtn.OnZCommonItemEnter += cancelLeaveLate;
@@ -57,6 +67,8 @@ public class SmallPoint : MonoBehaviour
         AddBtn.OnZCommonItemExit += leaveLate;
         TrackBtn.OnZCommonItemEnter += cancelLeaveLate;
         TrackBtn.OnZCommonItemExit += leaveLate;
+        TalkbackBtn.OnZCommonItemEnter += cancelLeaveLate;
+        TalkbackBtn.OnZCommonItemExit += leaveLate;
 
     }
 
@@ -67,37 +79,96 @@ public class SmallPoint : MonoBehaviour
         Icon.sprite = data.Icon;
     }
 
-    private void ShowDetailView()
+    public void ShowDetailView()
     {
         cancelLeaveLate();
         Btns.gameObject.SetActive(true);
+        StartCoroutine("ShowDetailCor");
 
-        foreach (var item in UIManager.Instance.MapP.CallerMapUsedDic)
+        foreach (var item in UIManager.Instance.MapP.MapPointsDic)
         {
-            if (item.Key != PlayerId)
+            if (item.Key != OnwerChannelName)
             {
                 item.Value.Btns.gameObject.SetActive(false);
+                item.Value.HideAllBtn();
             }
         }
+    }
+
+    public void HideAllBtn()
+    {
+        StopCoroutine("ShowDetailCor");
+        TalkbackBtn.gameObject.SetActive(false);
+        AddBtn.gameObject.SetActive(false);
+        FocusBtn.gameObject.SetActive(false);
+        TrackBtn.gameObject.SetActive(false);
+    }
+
+    float speed = 20;
+    float intervalRate = 4.5f;
+
+    private IEnumerator ShowDetailCor()
+    {
+        TalkbackBtn.gameObject.SetActive(true);
+        AddBtn.gameObject.SetActive(true);
+        FocusBtn.gameObject.SetActive(true);
+        TrackBtn.gameObject.SetActive(true);
+        Color c = TalkbackBtn.NormalImage.color;
+        Color c2 = TalkbackIcon.color;
+        TalkbackBtn.NormalImage.color = new Color(c.r, c.g, c.b, 0);
+        TalkbackIcon.color = new Color(c2.r, c2.g, c2.b, 0);
+        AddBtn.NormalImage.color = new Color(c.r, c.g, c.b, 0);
+        AddIcon.color = new Color(c2.r, c2.g, c2.b, 0);
+        FocusBtn.NormalImage.color = new Color(c.r, c.g, c.b, 0);
+        FocusIcon.color = new Color(c2.r, c2.g, c2.b, 0);
+        TrackBtn.NormalImage.color = new Color(c.r, c.g, c.b, 0);
+        TrackIcon.color = new Color(c2.r, c2.g, c2.b, 0);
+
+        StartCoroutine(Shoot(TalkbackBtn, TalkbackIcon, c, c2));
+        yield return new WaitForSeconds(1 / speed);
+        StartCoroutine(Shoot(AddBtn, AddIcon, c, c2));
+        yield return new WaitForSeconds(1 / speed);
+        StartCoroutine(Shoot(FocusBtn, FocusIcon, c, c2));
+        yield return new WaitForSeconds(1 / speed);
+        StartCoroutine(Shoot(TrackBtn, TrackIcon, c, c2));
+        yield return new WaitForSeconds(1 / speed);
+
+    }
+
+
+    private IEnumerator Shoot(ZUIButton btn, Image icon, Color c, Color c2)
+    {
+        float a = 0;
+        while (a < 1)
+        {
+            a += 0.01f * intervalRate;
+            btn.NormalImage.color = new Color(c.r, c.g, c.b, a);
+            icon.color = new Color(c2.r, c2.g, c2.b, a);
+            yield return null;
+        }
+        btn.NormalImage.color = new Color(c.r, c.g, c.b, 1); ;
+        icon.color = new Color(c2.r, c2.g, c2.b, 1);
     }
 
     private void hideDetailView()
     {
         Btns.gameObject.SetActive(false);
+        Track.fillAmount = 0;
     }
     private void cancelLeaveLate()
     {
         StopCoroutine("leaveLateCor");
     }
-    private void leaveLate()
+    public void leaveLate()
     {
         StopCoroutine("leaveLateCor");
         StartCoroutine("leaveLateCor");
     }
+    float keepTime = 2;
     private IEnumerator leaveLateCor()
     {
         float time = 0;//time = 1
-        while ((time += Time.deltaTime) < 1)
+        while ((time += Time.deltaTime) < keepTime)
         {
             yield return null;
         }
@@ -118,9 +189,9 @@ public class SmallPoint : MonoBehaviour
             Tween tween = Btns.transform.DOLocalMove(DefaultPos + icon_btns_offset, 0.5f);
             tween.onComplete = () =>
             {
-                foreach (var item in UIManager.Instance.MapP.CallerMapUsedDic)
+                foreach (var item in UIManager.Instance.MapP.MapPointsDic)
                 {
-                    if (item.Key != PlayerId)
+                    if (item.Key != OnwerChannelName)
                     {
                         item.Value.gameObject.SetActive(true);
                     }
@@ -128,14 +199,20 @@ public class SmallPoint : MonoBehaviour
             };
         };
 
-        foreach (var item in UIManager.Instance.MapP.CallerMapUsedDic)
+        foreach (var item in UIManager.Instance.MapP.MapPointsDic)
         {
-            if (item.Key != PlayerId)
+            if (item.Key != OnwerChannelName)
             {
                 item.Value.gameObject.SetActive(false);
             }
         }
     }
+
+    public void TalkbackClked()
+    {
+        UIManager.Instance.OpenHintPanel(Name);
+    }
+
 
     public void TrackRun()
     {

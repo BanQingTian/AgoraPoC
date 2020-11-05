@@ -41,6 +41,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public bool isHovering = false;
     public bool isDowning = false; // 为了防止点中之后移动到button之外再回来，还会执行按钮的up函数
+    public bool PlayAuido = true;
 
     public static bool BtnHovering = false;
 
@@ -53,7 +54,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
 
     // 缩放比例
-    private const float HoveringScaleValue = 1.2f;
+    private const float HoveringScaleValue = 1.4f;
     private const float PressScaleValue = 0.8f;
     // 缩放时间
     private const float HoverScaleBackDuration = 0.2f;
@@ -78,9 +79,16 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         OnZCommonItemDown?.Invoke();
-        NormalImage.rectTransform.DOScale(PressScaleValue, PressScaleBackDuration);
-        //GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayForward();
-        NormalImage.rectTransform.DOScale(PressScaleValue, HoverScaleBackDuration);
+        if (PlayAuido)
+        {
+            SoundController.Instance.Play(AUDIOCLIPENUM.CLICK);
+        }
+        if ((int)Mode > 1)
+        {
+            NormalImage.rectTransform.DOScale(PressScaleValue, PressScaleBackDuration);
+            //GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayForward();
+            NormalImage.rectTransform.DOScale(PressScaleValue, HoverScaleBackDuration);
+        }
 
         isDowning = true;
     }
@@ -93,11 +101,13 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         }
         if (PressedImage != null)
         {
-            PressedImage.enabled = true;
+            PressedImage.gameObject.SetActive(true);
         }
 
         //NormalImage.rectTransform.DOScale(defaultScaleValue, PressScaleBackDuration);
-            //GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayBackwards();
+        //GetScaleTween(PressScaleValue, PressScaleBackDuration).PlayBackwards();
+
+        if ((int)Mode > 1)
             NormalImage.rectTransform.DOScale(1, 0.2f);
 
 
@@ -138,6 +148,11 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         OnZCommonItemEnter?.Invoke();
         isHovering = true;
         BtnHovering = true;
+
+        if (PlayAuido)
+        {
+            SoundController.Instance.Play(AUDIOCLIPENUM.HOVER);
+        }
 
         switch (Mode)
         {
@@ -214,7 +229,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
             case HoverMode.AnimationAndReplace:
                 NormalImage.rectTransform.DOScale(1, 0.2f);
-                if(HoverImage!=null && HoldOnImage != null)
+                if (HoverImage != null && HoldOnImage != null)
                 {
                     HoverImage.gameObject.SetActive(false);
                     HoldOnImage.gameObject.SetActive(true);
@@ -225,7 +240,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     }
 
     private Tween m_ScaleTween;
-    private float last_scale =  0;
+    private float last_scale = 0;
     private Tween GetScaleTween(float scale, float duration)
     {
         if (m_ScaleTween == null || scale != last_scale)

@@ -23,9 +23,4 @@ public class Enter : MonoBehaviour
         b3.onClick.AddListener(() => { UIManager_SampleMode.curChannelName = "nreal3"; Debug.Log("cur channel name is nreal3"); });
     }
 
-    // Update is called once per frame
-    void Update()
-    {
-
-    }
 }

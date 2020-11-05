@@ -114,7 +114,7 @@ public class ZMessageManager
 
         Message m = msg as Message;
 
-        MainController.Instance.MsgHandler(m);
+        //MainController.Instance.MsgHandler(m);
     }
 
 
