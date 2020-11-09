@@ -4,6 +4,11 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
+public enum ViewActionMode
+{
+    big, // channel_1
+    small // channel_2_3
+}
 public class SmallView : MonoBehaviour
 {
     [SerializeField]
@@ -14,7 +19,24 @@ public class SmallView : MonoBehaviour
 
     public string ChannelName;
 
+    public ViewActionMode VAM = ViewActionMode.small;
+
+    public ZBtn2 SwitchBtn;
+
+    public ZUIButton CloseBtn;
+    public TMPro.TextMeshProUGUI LabelTip;
+
     private bool isDirty = false;
+
+    private void Start()
+    {
+        SwitchBtn.ClkUp = ClkBtn;
+        CloseBtn.OnZCommonItemUp = () => 
+        {
+            Release();
+           MainController.Instance.ChannelDataDic[ChannelName].AC?.LeaveChannel();
+        };
+    }
 
     public bool Dirty
     {
@@ -73,18 +95,17 @@ public class SmallView : MonoBehaviour
         m_Image.texture = defaultTex;
         m_Uid = 0;
         Destroy(GetComponent<VideoSurface>());
-        m_Image.transform.SetAsLastSibling();
 
-        MainController.Instance.m_SmallViews.Remove(this);
-        MainController.Instance.m_SmallViews.Add(this);
+        CloseBtn.gameObject.SetActive(false);
 
-        //gameObject.SetActive(false);
+        LabelTip.text = "未连接";
     }
 
     public void LoadVideSurface()
     {
         if (defaultTex == null)
             defaultTex = m_Image.texture;
+        Image.texture = null;
         var sv = Image.gameObject.AddComponent<VideoSurface>();
         if (!ReferenceEquals(sv, null))
         {
@@ -96,6 +117,39 @@ public class SmallView : MonoBehaviour
             //sv.SetGameFps(30);
             sv.SetForMultiChannelUser(ChannelName, m_Uid);
         }
+        CloseBtn.gameObject.SetActive(true);
+        LabelTip.text = ChannelName.Replace("nreal", "5G成员");
+    }
 
+
+    public void ClkBtn()
+    {
+        switch (VAM)
+        {
+            case ViewActionMode.big:
+
+                if(UIManager.Instance.VideoP.mode == ZViewMode.SurroundMode)
+                {
+                    UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.MainSubMode);
+                    UIManager.Instance.VideoP.MainSubBtnClked();
+                }
+
+
+                break;
+            case ViewActionMode.small:
+
+                if(UIManager.Instance.VideoP.mode == ZViewMode.MainSubMode)
+                {
+                    UIManager.Instance.VideoP.SetSmallLayout(ChannelName);
+                    UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.SurroundMode);
+                    UIManager.Instance.VideoP.SurroundBtnClked();
+                }
+
+
+
+                break;
+            default:
+                break;
+        }
     }
 }

@@ -11,6 +11,7 @@ public class Enter : MonoBehaviour
     public Button b1;
     public Button b2;
     public Button b3;
+    public Button b4;
 
     // Start is called before the first frame update
     void Start()
@@ -21,6 +22,7 @@ public class Enter : MonoBehaviour
         b1.onClick.AddListener(() => { UIManager_SampleMode.curChannelName = "nreal1"; Debug.Log("cur channel name is nreal1"); });
         b2.onClick.AddListener(() => { UIManager_SampleMode.curChannelName = "nreal2"; Debug.Log("cur channel name is nreal2"); });
         b3.onClick.AddListener(() => { UIManager_SampleMode.curChannelName = "nreal3"; Debug.Log("cur channel name is nreal3"); });
+        b4.onClick.AddListener(() => { UIManager_SampleMode.curChannelName = "nreal4"; Debug.Log("cur channel name is nreal4"); });
     }
 
 }

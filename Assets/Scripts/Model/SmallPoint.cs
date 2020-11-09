@@ -54,7 +54,7 @@ public class SmallPoint : MonoBehaviour
 
     public void AddListener()
     {
-        PointBtn.OnZCommonItemEnter += ShowDetailView;
+        PointBtn.OnZCommonItemUp += ShowDetailView;
         FocusBtn.OnZCommonItemUp += Focus;
         AddBtn.OnZCommonItemUp += AddCallerToList;
         TrackBtn.OnZCommonItemUp += TrackRun;
@@ -227,6 +227,13 @@ public class SmallPoint : MonoBehaviour
             yield return null;
         }
         Track.fillAmount = 1;
+        foreach (var item in UIManager.Instance.MapP.CallerMapItemPrefabs)
+        {
+            if(item.OnwerChannelName != OnwerChannelName)
+            {
+                item.Track.fillAmount = 0;
+            }
+        }
     }
 
     public void AddCallerToList()

@@ -24,19 +24,37 @@ public class ZStreamingController
         Debug.Log("calling join (channel = " + channelId + ")");
         if (mRtcEngine == null)
             return;
-        if (MainController.Instance.ChannelDataDic[channelId].AC == null)
+        if (UIManager.Instance != null)
         {
-            MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId);
+            if (MainController.Instance.ChannelDataDic[channelId].AC == null)
+            {
+                MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId);
+            }
+        }
+        else
+        {
+
         }
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
 
         mRtcEngine.SetMultiChannelWant(true);
-        MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(true, true));
-        //MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
-        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
-        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
-        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
+
+        if (UIManager.Instance != null)
+        {
+            MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(false, true));
+            //MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
+            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
+            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
+            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
+        }
+        else
+        {
+            AgoraChannel acc = mRtcEngine.CreateChannel(channelId);
+            acc.JoinChannel("", "", 0, new ChannelMediaOptions(false, true));
+            acc.ChannelOnJoinChannelSuccess = onJoinChannelSuccess2;
+        }
+
 
         //foreach (var item in MainController.Instance.ChannelDataDic)
         //{
@@ -182,6 +200,26 @@ public class ZStreamingController
             vs.SetForUser(0);
             vs.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
             vs.SetGameFps(30);
+        }
+    }
+    private void onJoinChannelSuccess2(string channelName, uint uid, int elapsed)
+    {
+        Debug.Log("JoinChannelSuccessHandler22222222222222222: uid = " + uid);
+        //GameObject textVersionGameObject = GameObject.Find("VersionText");
+        //textVersionGameObject.GetComponent<Text>().text = "SDK Version : " + getSdkVersion();
+
+        if (UIManager_SampleMode.Instance != null)
+        {
+            var vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.GetComponent<VideoSurface>();
+            if (vs == null)
+            {
+                vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.AddComponent<VideoSurface>();
+            }
+            //vs.SetEnable(true);
+            //vs.SetForUser(0);
+            //vs.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
+            //vs.SetGameFps(30);
+            vs.SetForMultiChannelUser(channelName, 0);
         }
     }
     public void onUserJoined(string channelId, uint uid, int elapaed)

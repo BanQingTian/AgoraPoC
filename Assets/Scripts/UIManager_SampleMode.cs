@@ -29,7 +29,7 @@ public class UIManager_SampleMode : MonoBehaviour
         {
             smcp.OpenVideoModeUI();
             Debug.Log("join channel");
-            MainController.Instance.JoinChannelForAndroid(curChannelName);
+            MainController.Instance.JoinMultiChannel(curChannelName);
 
             
 

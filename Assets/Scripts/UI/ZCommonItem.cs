@@ -49,6 +49,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public Image NormalImage;
     public Image HoverImage;
+    public Image HoverImage2;
     public Image PressedImage;
     public Image HoldOnImage;
 
@@ -142,7 +143,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
     public virtual void enterLogic()
     {
-        OnZCommonItemEnter?.Invoke();
         isHovering = true;
         BtnHovering = true;
 
@@ -156,6 +156,8 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
             case HoverMode.Extra:
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(true);
+                if (HoverImage2 != null)
+                    HoverImage2.gameObject.SetActive(true);
                 break;
 
             case HoverMode.Replace:
@@ -163,6 +165,8 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     NormalImage.gameObject.SetActive(false);
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(true);
+                if (HoverImage2 != null)
+                    HoverImage2.gameObject.SetActive(true);
                 break;
 
             case HoverMode.Animation:
@@ -176,6 +180,8 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 NormalImage.rectTransform.DOScale(HoveringScaleValue, 0.2f);
                 if (HoverImage != null)
                     HoverImage.gameObject.SetActive(true);
+                if (HoverImage2 != null)
+                    HoverImage2.gameObject.SetActive(true);
                 break;
 
             case HoverMode.AnimationAndReplace:
@@ -185,14 +191,18 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                     HoverImage.gameObject.SetActive(true);
                     HoldOnImage.gameObject.SetActive(false);
                 }
+                if (HoverImage2 != null)
+                    HoverImage2.gameObject.SetActive(true);
                 break;
 
         }
+
+        OnZCommonItemEnter?.Invoke();
+
     }
 
     public virtual void exitLogic()
     {
-        OnZCommonItemExit?.Invoke();
         isHovering = false;
         BtnHovering = false;
         isDowning = false;
@@ -234,6 +244,9 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
                 break;
         }
+
+        OnZCommonItemExit?.Invoke();
+
     }
 
     private Tween m_ScaleTween;
