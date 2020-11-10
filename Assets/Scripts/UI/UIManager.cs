@@ -99,16 +99,32 @@ public class UIManager : MonoBehaviour
     }
     #region UILogic
 
-    public void OpenHintPanel(string name)
+    public void OpenHintPanel(string content, int n = 0)
     {
-        Debug.Log("OpenHintPanel(string name)");
-        HintP.Name.text = name;
-        StartCoroutine("Shoot");
+        HintP.gameObject.SetActive(true);
+        HintP.SetMode(n);
+        HintP.Name.text = content;
+        if (n == 0)
+        {
+            StartCoroutine("Shoot");
+        }
+        else 
+        {
+            StartCoroutine("ShootNormal");
+        }
+        
     }
     public void HideHint()
     {
         StopCoroutine("Shoot");
+        StopCoroutine("ShootNormal");
         HintP.gameObject.SetActive(false);
+    }
+
+    private IEnumerator ShootNormal()
+    {
+        yield return new WaitForSeconds(5);
+        HideHint();
     }
     private IEnumerator Shoot()
     {

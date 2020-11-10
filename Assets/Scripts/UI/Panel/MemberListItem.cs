@@ -8,7 +8,7 @@ public class MemberListItem : MonoBehaviour
     public string ChannelName;
     public string Name;
 
-    public ZUIButton EqualSmallPoint;
+    //public ZUIButton EqualSmallPoint;
 
     public void AddListener()
     {
@@ -16,7 +16,7 @@ public class MemberListItem : MonoBehaviour
         Btn.OnZCommonItemExit = Exit;
         Btn.OnZCommonItemUp = ShowDetail;
 
-        EqualSmallPoint = UIManager.Instance.MapP.MapPointsDic[ChannelName].GetComponent<ZUIButton>();
+        //EqualSmallPoint = UIManager.Instance.MapP.MapPointsDic[ChannelName].GetComponent<ZUIButton>();
     }
     public void ShowDetail()
     {
@@ -25,11 +25,11 @@ public class MemberListItem : MonoBehaviour
 
     private void Enter()
     {
-        EqualSmallPoint.HoverImage.gameObject.SetActive(true);
+        //EqualSmallPoint.HoverImage.gameObject.SetActive(true);
     }
     private void Exit()
     {
-        EqualSmallPoint.HoverImage.gameObject.SetActive(false);
+        //EqualSmallPoint.HoverImage.gameObject.SetActive(false);
 
     }
 }

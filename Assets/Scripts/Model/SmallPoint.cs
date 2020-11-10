@@ -240,6 +240,7 @@ public class SmallPoint : MonoBehaviour
     {
         // UIManager.Instance.CallerP.MoveCallerToChannel(PlayerId);
         MainController.Instance.JoinMultiChannel(OnwerChannelName);
+        UIManager.Instance.OpenHintPanel("", 1);
     }
 
     public void SPDelete()

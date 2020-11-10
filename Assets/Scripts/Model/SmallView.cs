@@ -19,10 +19,6 @@ public class SmallView : MonoBehaviour
 
     public string ChannelName;
 
-    public ViewActionMode VAM = ViewActionMode.small;
-
-    public ZBtn2 SwitchBtn;
-
     public ZUIButton CloseBtn;
     public TMPro.TextMeshProUGUI LabelTip;
 
@@ -30,11 +26,11 @@ public class SmallView : MonoBehaviour
 
     private void Start()
     {
-        SwitchBtn.ClkUp = ClkBtn;
-        CloseBtn.OnZCommonItemUp = () => 
+        CloseBtn.OnZCommonItemUp = () =>
         {
             Release();
-           MainController.Instance.ChannelDataDic[ChannelName].AC?.LeaveChannel();
+            MainController.Instance.ChannelDataDic[ChannelName].AC?.LeaveChannel();
+            UIManager.Instance.OpenHintPanel("", 2);
         };
     }
 
@@ -98,7 +94,7 @@ public class SmallView : MonoBehaviour
 
         CloseBtn.gameObject.SetActive(false);
 
-        LabelTip.text = "未连接";
+        LabelTip.text = "视频未连接";
     }
 
     public void LoadVideSurface()
@@ -121,35 +117,4 @@ public class SmallView : MonoBehaviour
         LabelTip.text = ChannelName.Replace("nreal", "5G成员");
     }
 
-
-    public void ClkBtn()
-    {
-        switch (VAM)
-        {
-            case ViewActionMode.big:
-
-                if(UIManager.Instance.VideoP.mode == ZViewMode.SurroundMode)
-                {
-                    UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.MainSubMode);
-                    UIManager.Instance.VideoP.MainSubBtnClked();
-                }
-
-
-                break;
-            case ViewActionMode.small:
-
-                if(UIManager.Instance.VideoP.mode == ZViewMode.MainSubMode)
-                {
-                    UIManager.Instance.VideoP.SetSmallLayout(ChannelName);
-                    UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.SurroundMode);
-                    UIManager.Instance.VideoP.SurroundBtnClked();
-                }
-
-
-
-                break;
-            default:
-                break;
-        }
-    }
 }

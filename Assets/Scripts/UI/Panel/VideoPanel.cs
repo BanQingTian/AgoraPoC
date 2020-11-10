@@ -17,53 +17,53 @@ public class VideoPanel : ZBasePanel
 {
     public List<RectTransform> m_Views = new List<RectTransform>();
 
-    public GameObject channel1Bg;
-
     public ZViewMode mode = ZViewMode.SurroundMode;
 
-    public ZUIButton SurroundBtnUnselect;
-    public GameObject SurroundBtnSelect;
-    public ZUIButton MainSubBtnUnselect;
-    public GameObject MainSubBtnSelect;
+    public ZUIButton SwitchBtn_Surround;
+    public ZUIButton SwitchBtn_Mainsub;
+
+    public GameObject Channel1_bg;
 
     public GameObject MoveTip1;
     public GameObject MoveTip2;
     public GameObject MoveTip3;
 
-    public GameObject Channel1CloseBtn;
-    public GameObject Channel1LabelTip;
-
-
     public void AddListener()
     {
-        SurroundBtnUnselect.OnZCommonItemUp += SurroundBtnClked;
-        MainSubBtnUnselect.OnZCommonItemUp += MainSubBtnClked;
+        SwitchBtn_Surround.OnZCommonItemUp = SwitchMode;
+        SwitchBtn_Mainsub.OnZCommonItemUp = SwitchMode;
 
         SurroundBtnClked();
     }
 
+
+
     public void SurroundBtnClked()
     {
-        SurroundBtnSelect.SetActive(true);
-        MainSubBtnSelect.gameObject.SetActive(false);
-
+        UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.MainSubMode);
         SetViewMode(ZViewMode.SurroundMode);
+        SwitchBtn_Surround.gameObject.SetActive(false);
+        SwitchBtn_Mainsub.gameObject.SetActive(true);
     }
     public void MainSubBtnClked()
     {
-        SurroundBtnSelect.SetActive(false);
-        MainSubBtnUnselect.gameObject.SetActive(true);
-
+        UIManager.Instance.BarP.SetVideoBarHoverMode(ZViewMode.SurroundMode);
         SetViewMode(ZViewMode.MainSubMode);
+        SwitchBtn_Surround.gameObject.SetActive(true);
+        SwitchBtn_Mainsub.gameObject.SetActive(false);
     }
 
-    private string leftChannelName;
-    public void SetSmallLayout(string cn)
+    public void SwitchMode()
     {
-        //leftChannelName = cn;
-        leftChannelName = "nreal2";
+        if (mode == ZViewMode.SurroundMode)
+        {
+            MainSubBtnClked();
+        }
+        else if (mode == ZViewMode.MainSubMode)
+        {
+            SurroundBtnClked();
+        }
     }
-
 
     public void SetViewMode(ZViewMode m)
     {
@@ -71,30 +71,12 @@ public class VideoPanel : ZBasePanel
         switch (mode)
         {
             case ZViewMode.SurroundMode:
-                // channel1 = 0.99/scale 0xyz
-                // channel2 = 1/scale -171x0yz
-                // channel3 = 1/scale 171x0yz
 
-                m_Views[0].localPosition = Vector3.zero;
+                m_Views[1].localPosition = new Vector3(280.9f, 1.3462f, 0);
+                m_Views[2].localPosition = new Vector3(452f, 1.3462f, 0);
 
-                //if (leftChannelName == "nreal2")
-                {
-                    m_Views[1].localPosition = new Vector3(-171f, 0, 0);
-                    m_Views[2].localPosition = new Vector3(171f, 0, 0);
-                }
-                //else
-                //{
-                //    m_Views[2].localPosition = new Vector3(-171f, 0, 0);
-                //    m_Views[1].localPosition = new Vector3(171f, 0, 0);
-                //}
-                Channel1CloseBtn.transform.localPosition = new Vector3(53.4f, Channel1CloseBtn.transform.localPosition.y, Channel1CloseBtn.transform.localPosition.z);
-                Channel1LabelTip.transform.localPosition = new Vector3(-27.5f, Channel1LabelTip.transform.localPosition.y, Channel1LabelTip.transform.localPosition.z);
-
-                m_Views[0].localScale = new Vector3(0.99f, 0.99f, 0.99f);
                 m_Views[1].localScale = Vector3.one;
                 m_Views[2].localScale = Vector3.one;
-
-                channel1Bg.SetActive(true);
 
                 UIManager.Instance.BarP.SetVideoBarHoverMode(mode);
 
@@ -102,24 +84,12 @@ public class VideoPanel : ZBasePanel
 
 
             case ZViewMode.MainSubMode:
-                // channel1 = 2.83/scale  -30.9x0yz
-                // channel2 = 0.5/scale  224x63.8y0z
-                // channel3 = 0.5/scale  224x-65y0z
 
-                Channel1CloseBtn.transform.localPosition = new Vector3(161.5f, Channel1CloseBtn.transform.localPosition.y, Channel1CloseBtn.transform.localPosition.z);
-                Channel1LabelTip.transform.localPosition = new Vector3(-193.3f, Channel1LabelTip.transform.localPosition.y, Channel1LabelTip.transform.localPosition.z);
+                m_Views[1].localPosition = new Vector3(227.9f, 66.9f, 0f);
+                m_Views[2].localPosition = new Vector3(227.9f, -62.5f, 0f);
 
-                m_Views[0].localPosition = new Vector3(-30.9f, 0, 0);
-                m_Views[0].localScale = Vector3.one * 2.83f;
-
-                m_Views[1].localPosition = new Vector3(224, 63.8f, 0);
-                m_Views[2].localPosition = new Vector3(224, -64.6f, 0);
-
-                m_Views[1].localScale = Vector3.one * 0.5f;
-                m_Views[2].localScale = Vector3.one * 0.5f;
-
-
-                channel1Bg.SetActive(false);
+                m_Views[1].localScale = Vector3.one * 0.49f;
+                m_Views[2].localScale = Vector3.one * 0.49f;
 
                 UIManager.Instance.BarP.SetVideoBarHoverMode(mode);
 
@@ -154,6 +124,8 @@ public class VideoPanel : ZBasePanel
     }
 
 
+
+
     public Vector3 GetCenterPos(int n = 1)
     {
         if (n == 1)
@@ -168,13 +140,13 @@ public class VideoPanel : ZBasePanel
         {
             return m_Views[2].transform.position;
         }
-        return channel1Bg.transform.position;
+        return m_Views[0].transform.position;
     }
     public Quaternion GetCenterRot(int n = 1)
     {
         if (n == 1)
         {
-            return channel1Bg.transform.rotation;
+            return Channel1_bg.transform.rotation;
         }
         else if (n == 2)
         {
@@ -184,6 +156,6 @@ public class VideoPanel : ZBasePanel
         {
             return m_Views[2].transform.rotation;
         }
-        return channel1Bg.transform.rotation;
+        return Channel1_bg.transform.rotation;
     }
 }
