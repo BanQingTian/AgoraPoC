@@ -18,7 +18,6 @@ public class ZStreamingController
     public Text FrameCount;
 
 
-
     public void JoinMultiChannel(string channelId, bool useVideo)
     {
         Debug.Log("calling join (channel = " + channelId + ")");
@@ -31,29 +30,15 @@ public class ZStreamingController
                 MainController.Instance.ChannelDataDic[channelId].AC = mRtcEngine.CreateChannel(channelId);
             }
         }
-        else
-        {
 
-        }
         mRtcEngine.EnableVideo();
         mRtcEngine.EnableVideoObserver();
-
         mRtcEngine.SetMultiChannelWant(true);
-
-        if (UIManager.Instance != null)
-        {
-            MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(false, true));
-            //MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
-            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
-            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
-            MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
-        }
-        else
-        {
-            AgoraChannel acc = mRtcEngine.CreateChannel(channelId);
-            acc.JoinChannel("", "", 0, new ChannelMediaOptions(false, true));
-            acc.ChannelOnJoinChannelSuccess = onJoinChannelSuccess2;
-        }
+        MainController.Instance.ChannelDataDic[channelId].AC.JoinChannel("", "", 0, new ChannelMediaOptions(false, true));
+        //MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnJoinChannelSuccess = onJoinChannelSuccess;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserJoined = onUserJoined;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnUserOffLine = onUserOffline;
+        MainController.Instance.ChannelDataDic[channelId].AC.ChannelOnRtcStats = OnChannelStatus;
 
 
         //foreach (var item in MainController.Instance.ChannelDataDic)
@@ -67,6 +52,7 @@ public class ZStreamingController
         //MainController.Instance.ChannelDataDic[channelId].AC.Publish();
 
     }
+
 
     public void join(string channel, bool useVideo = true)
     {
@@ -85,14 +71,8 @@ public class ZStreamingController
         // allow camera output callback
         mRtcEngine.EnableVideoObserver();
 
-        //if (!MainController.Instance.EnterChannel)
-        {
-            //MainController.Instance.EnterChannel = true;
-            // join channel
-            mRtcEngine.JoinChannel(channel, null, 0);
-        }
+        mRtcEngine.JoinChannel(channel, null, 0);
 
-        Debug.Log(string.Format("[CZLOG] JoinChanel , usingVideo : {0} ", useVideo));
     }
 
     public string getSdkVersion()
@@ -157,32 +137,19 @@ public class ZStreamingController
         }
     }
 
-    // accessing GameObject in Scnene1
-    // set video transform delegate for statically created GameObject
-    public void onSceneHelloVideoLoaded()
-    {
-        ViewBase view = GameObject.FindObjectOfType<ViewBase>();
-        if (view == null)
-        {
-            Debug.LogError("Can not find a view.");
-            return;
-        }
-
-        view.OnLoad(mStreamingProvider);
-    }
     private void OnChannelStatus(string channelId, RtcStats stats)
     {
         string rtcStatsMessage = string.Format("onRtcStats callback duration {0}, tx: {1}, rx: {2}, tx kbps: {3}, rx kbps: {4}, tx(a) kbps: {5}, rx(a) kbps: {6} users {7}",
                 stats.duration, stats.txBytes, stats.rxBytes, stats.txKBitRate, stats.rxKBitRate, stats.txAudioKBitRate, stats.rxAudioKBitRate, stats.userCount);
         Debug.Log(channelId + "==" + rtcStatsMessage);
 
-        int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
-        int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
+        //int lengthOfMixingFile = mRtcEngine.GetAudioMixingDuration();
+        //int currentTs = mRtcEngine.GetAudioMixingCurrentPosition();
 
         //string mixingMessage = string.Format("Mixing File Meta {0}, {1}", lengthOfMixingFile, currentTs);
         //Debug.Log(mixingMessage);
     }
-    // implement engine callbacks
+
     private void onJoinChannelSuccess(string channelName, uint uid, int elapsed)
     {
         Debug.Log("JoinChannelSuccessHandler: uid = " + uid);
@@ -202,28 +169,10 @@ public class ZStreamingController
             vs.SetGameFps(30);
         }
     }
-    private void onJoinChannelSuccess2(string channelName, uint uid, int elapsed)
-    {
-        Debug.Log("JoinChannelSuccessHandler22222222222222222: uid = " + uid);
-        //GameObject textVersionGameObject = GameObject.Find("VersionText");
-        //textVersionGameObject.GetComponent<Text>().text = "SDK Version : " + getSdkVersion();
 
-        if (UIManager_SampleMode.Instance != null)
-        {
-            var vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.GetComponent<VideoSurface>();
-            if (vs == null)
-            {
-                vs = UIManager_SampleMode.Instance.CamHelper.rawImage.gameObject.AddComponent<VideoSurface>();
-            }
-            //vs.SetEnable(true);
-            //vs.SetForUser(0);
-            //vs.SetVideoSurfaceType(AgoraVideoSurfaceType.RawImage);
-            //vs.SetGameFps(30);
-            vs.SetForMultiChannelUser(channelName, 0);
-        }
-    }
     public void onUserJoined(string channelId, uint uid, int elapaed)
     {
+        Debug.Log("joined ===================");
         MainController.Instance.JoinNewUser(channelId, uid);
     }
     private void onUserJoined(uint uid, int elapsed)

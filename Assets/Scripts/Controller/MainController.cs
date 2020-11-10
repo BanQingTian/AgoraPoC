@@ -65,6 +65,8 @@ public class MainController : MonoBehaviour
 
     void Awake()
     {
+        NRKernal.NRVirtualDisplayer.RunInBackground = true;
+
         Application.targetFrameRate = 60;
 #if (UNITY_2018_3_OR_NEWER && UNITY_ANDROID)
         permissionList.Add(Permission.Microphone);
@@ -111,24 +113,6 @@ public class MainController : MonoBehaviour
         ChannelDataDic.Add("nreal2", new AgoraChannelData("nreal2", UIManager.Instance.MapP.CallerMapItemPrefabs[1], m_SmallViews[1]));
         ChannelDataDic.Add("nreal3", new AgoraChannelData("nreal3", UIManager.Instance.MapP.CallerMapItemPrefabs[2], m_SmallViews[2]));
     }
-
-    //// 设置当前加入的频道名称， 用于后续加入成功保持数据使用
-    //public void SetCurJoinChannelName(string name)
-    //{
-    //    CurChannelName = name;
-    //    JoiningChannel = true;
-    //}
-    //// 获取当前选取的频道名称，获取后初始化状态
-    //public string GetCurChannelName()
-    //{
-    //    JoiningChannel = false;
-    //    return CurChannelName;
-    //}
-    //// 判断当前专题是否可以继续加入频道
-    //public bool GetJoinStatus()
-    //{
-    //    return JoiningChannel;
-    //}
 
     public void JoinNewUser(string cn, uint uid)
     {
