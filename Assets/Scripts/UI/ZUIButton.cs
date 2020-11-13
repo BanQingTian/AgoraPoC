@@ -6,7 +6,7 @@ public class ZUIButton : ZCommonItem
 {
     private void OnEnable()
     {
-        exitLogic();
+        base.exitLogic();
     }
     public override void enterLogic()
     {

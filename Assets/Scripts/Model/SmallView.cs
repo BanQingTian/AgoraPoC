@@ -24,14 +24,11 @@ public class SmallView : MonoBehaviour
 
     private bool isDirty = false;
 
+    public bool VideoIsOpen { get; set; }
+
     private void Start()
     {
-        CloseBtn.OnZCommonItemUp = () =>
-        {
-            Release();
-            MainController.Instance.ChannelDataDic[ChannelName].AC?.LeaveChannel();
-            UIManager.Instance.OpenHintPanel("", 2);
-        };
+        CloseBtn.OnZCommonItemUp = CloseBtnClked;
     }
 
     public bool Dirty
@@ -53,6 +50,13 @@ public class SmallView : MonoBehaviour
     public uint GetUid()
     {
         return m_Uid;
+    }
+
+    public void CloseBtnClked()
+    {
+        Release();
+        MainController.Instance.ChannelDataDic[ChannelName].AC?.LeaveChannel();
+        UIManager.Instance.OpenHintPanel("", 2);
     }
 
     public void OpenAudioMode()

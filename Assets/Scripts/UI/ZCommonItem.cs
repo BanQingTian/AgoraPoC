@@ -55,8 +55,8 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
 
     // 缩放比例
-    private const float HoveringScaleValue = 1.4f;
-    private const float PressScaleValue = 0.8f;
+    public const float HoveringScaleValue = 1.4f;
+    public const float PressScaleValue = 0.8f;
     // 缩放时间
     private const float HoverScaleBackDuration = 0.2f;
     private const float PressScaleBackDuration = 0.2f;
@@ -80,6 +80,51 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
     public void OnPointerDown(PointerEventData eventData)
     {
         OnZCommonItemDown?.Invoke();
+
+        DownLogic();
+    }
+
+    public void OnPointerUp(PointerEventData eventData)
+    {
+        if (isHovering && isDowning)
+        {
+            OnZCommonItemUp?.Invoke();
+        }
+
+        UpLogic();
+    }
+
+    public void OnPointerEnter(PointerEventData eventData)
+    {
+        runOnceHoverEvent = true;
+        enterLogic();
+        OnZCommonItemEnter?.Invoke();
+    }
+
+    public void OnPointerExit(PointerEventData eventData)
+    {
+        exitLogic();
+        OnZCommonItemExit?.Invoke();
+    }
+
+
+    #endregion
+
+    public void InitAnimation()
+    {
+        if (!m_InitDefaultScale)
+        {
+            if (NormalImage == null)
+            {
+                Debug.LogError("[CZLOG] NormalImage Null !!");
+            }
+            m_InitDefaultScale = true;
+            defaultScaleValue = NormalImage.rectTransform.localScale.x;
+        }
+    }
+
+    public virtual void DownLogic()
+    {
         if (PlayAuido)
         {
             SoundController.Instance.Play(AUDIOCLIPENUM.CLICK);
@@ -93,12 +138,9 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
         isDowning = true;
     }
 
-    public void OnPointerUp(PointerEventData eventData)
+    public virtual void UpLogic()
     {
-        if (isHovering && isDowning)
-        {
-            OnZCommonItemUp?.Invoke();
-        }
+        
         if (PressedImage != null)
         {
             PressedImage.gameObject.SetActive(true);
@@ -112,33 +154,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         isDowning = false;
         BtnHovering = false;
-    }
-
-    public void OnPointerEnter(PointerEventData eventData)
-    {
-        runOnceHoverEvent = true;
-        enterLogic();
-    }
-
-    public void OnPointerExit(PointerEventData eventData)
-    {
-        exitLogic();
-    }
-
-
-    #endregion
-
-    private void InitAnimation()
-    {
-        if (!m_InitDefaultScale)
-        {
-            if (NormalImage == null)
-            {
-                Debug.LogError("[CZLOG] NormalImage Null !!");
-            }
-            m_InitDefaultScale = true;
-            defaultScaleValue = NormalImage.rectTransform.localScale.x;
-        }
     }
 
     public virtual void enterLogic()
@@ -197,7 +212,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
         }
 
-        OnZCommonItemEnter?.Invoke();
 
     }
 
@@ -223,7 +237,7 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
 
             case HoverMode.Animation:
                 InitAnimation();
-                GetScaleTween(HoveringScaleValue, HoverScaleBackDuration).PlayBackwards();
+                NormalImage.rectTransform.DOScale(1, 0.2f);
                 break;
 
             case HoverMode.AnimationAndExtra:
@@ -245,7 +259,6 @@ public class ZCommonItem : MonoBehaviour, IPointerDownHandler, IPointerUpHandler
                 break;
         }
 
-        OnZCommonItemExit?.Invoke();
 
     }
 

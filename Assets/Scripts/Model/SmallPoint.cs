@@ -20,7 +20,6 @@ public class SmallPoint : MonoBehaviour
     [Space(24)]
     public string OnwerChannelName = "unity3d";
     public string Name;
-    public ZUIButton PointBtn;
     public Image Track;
 
     public Image Icon;
@@ -34,6 +33,9 @@ public class SmallPoint : MonoBehaviour
     public Image AddIcon;
     public Image FocusIcon;
     public Image TrackIcon;
+
+    public MapPanelBtn ParentsBtn;
+
 
     public TMPro.TextMeshProUGUI NameLabel;
 
@@ -54,21 +56,21 @@ public class SmallPoint : MonoBehaviour
 
     public void AddListener()
     {
-        PointBtn.OnZCommonItemUp += ShowDetailView;
-        FocusBtn.OnZCommonItemUp += Focus;
-        AddBtn.OnZCommonItemUp += AddCallerToList;
-        TrackBtn.OnZCommonItemUp += TrackRun;
-        TalkbackBtn.OnZCommonItemUp += TalkbackClked;
+        ParentsBtn.OnZCommonItemUp = ShowDetailView;
+        FocusBtn.OnZCommonItemUp = Focus;
+        AddBtn.OnZCommonItemUp = AddCallerToList;
+        TrackBtn.OnZCommonItemUp= TrackRun;
+        TalkbackBtn.OnZCommonItemUp = TalkbackClked;
 
-        PointBtn.OnZCommonItemExit += leaveLate;
-        FocusBtn.OnZCommonItemEnter += cancelLeaveLate;
-        FocusBtn.OnZCommonItemExit += leaveLate;
-        AddBtn.OnZCommonItemEnter += cancelLeaveLate;
-        AddBtn.OnZCommonItemExit += leaveLate;
-        TrackBtn.OnZCommonItemEnter += cancelLeaveLate;
-        TrackBtn.OnZCommonItemExit += leaveLate;
-        TalkbackBtn.OnZCommonItemEnter += cancelLeaveLate;
-        TalkbackBtn.OnZCommonItemExit += leaveLate;
+        //ParentsBtn.OnZCommonItemExit = leaveLate;
+        FocusBtn.OnZCommonItemEnter = cancelLeaveLate;
+        FocusBtn.OnZCommonItemExit = leaveLate;
+        AddBtn.OnZCommonItemEnter = cancelLeaveLate;
+        AddBtn.OnZCommonItemExit = leaveLate;
+        TrackBtn.OnZCommonItemEnter = cancelLeaveLate;
+        TrackBtn.OnZCommonItemExit = leaveLate;
+        TalkbackBtn.OnZCommonItemEnter = cancelLeaveLate;
+        TalkbackBtn.OnZCommonItemExit = leaveLate;
 
     }
 
@@ -84,6 +86,7 @@ public class SmallPoint : MonoBehaviour
         cancelLeaveLate();
         Btns.gameObject.SetActive(true);
         StartCoroutine("ShowDetailCor");
+        ParentsBtn.OnZCommonItemExit = leaveLate;
 
         foreach (var item in UIManager.Instance.MapP.MapPointsDic)
         {
@@ -102,6 +105,7 @@ public class SmallPoint : MonoBehaviour
         AddBtn.gameObject.SetActive(false);
         FocusBtn.gameObject.SetActive(false);
         TrackBtn.gameObject.SetActive(false);
+        ParentsBtn.RunBtnExitLogic();
     }
 
     float speed = 20;
@@ -154,24 +158,30 @@ public class SmallPoint : MonoBehaviour
     {
         Btns.gameObject.SetActive(false);
         Track.fillAmount = 0;
+        ParentsBtn.RunBtnExitLogic();
     }
     private void cancelLeaveLate()
     {
-        StopCoroutine("leaveLateCor");
+        if (isRun)
+            StopCoroutine("leaveLateCor");
     }
     public void leaveLate()
     {
-        StopCoroutine("leaveLateCor");
+        if (isRun)
+            StopCoroutine("leaveLateCor");
         StartCoroutine("leaveLateCor");
     }
-    float keepTime = 2;
+    bool isRun = false;
     private IEnumerator leaveLateCor()
     {
+        isRun = true;
+
         float time = 0;//time = 1
-        while ((time += Time.deltaTime) < keepTime)
+        while ((time += Time.deltaTime) < 2)
         {
             yield return null;
         }
+        isRun = false;
         hideDetailView();
     }
 
@@ -180,12 +190,12 @@ public class SmallPoint : MonoBehaviour
     {
         //UIManager.Instance.MapP.Resize(MapZoomEndScale, MapZoomEndPos, 0.5f);
         UIManager.Instance.MapP.DOTweenResize(MapZoomEndScale, MapZoomEndPos, 0.5f);
-        PointBtn.transform.DOLocalMove(ItemZoomEndPos, 0.5f);
+        ParentsBtn.transform.DOLocalMove(ItemZoomEndPos, 0.5f);
         Btns.transform.DOLocalMove(ItemZoomEndPos + icon_btns_offset, 0.5f);
 
         UIManager.Instance.MapP.SyncAction = () =>
         {
-            PointBtn.transform.DOLocalMove(DefaultPos, 0.5f);
+            ParentsBtn.transform.DOLocalMove(DefaultPos, 0.5f);
             Tween tween = Btns.transform.DOLocalMove(DefaultPos + icon_btns_offset, 0.5f);
             tween.onComplete = () =>
             {
@@ -229,18 +239,40 @@ public class SmallPoint : MonoBehaviour
         Track.fillAmount = 1;
         foreach (var item in UIManager.Instance.MapP.CallerMapItemPrefabs)
         {
-            if(item.OnwerChannelName != OnwerChannelName)
+            if (item.OnwerChannelName != OnwerChannelName)
             {
                 item.Track.fillAmount = 0;
             }
         }
     }
 
+    bool videoIsOpen = false;
+    bool canclick = true;
     public void AddCallerToList()
     {
-        // UIManager.Instance.CallerP.MoveCallerToChannel(PlayerId);
-        MainController.Instance.JoinMultiChannel(OnwerChannelName);
-        UIManager.Instance.OpenHintPanel("", 1);
+        if (!canclick) return;
+
+        if (videoIsOpen)
+        {
+            MainController.Instance.ChannelDataDic[OnwerChannelName].SV.CloseBtnClked();
+            UIManager.Instance.OpenHintPanel(Name, 2);
+        }
+        else
+        {
+            MainController.Instance.JoinMultiChannel(OnwerChannelName);
+            UIManager.Instance.OpenHintPanel(Name, 1);
+        }
+        videoIsOpen = !videoIsOpen;
+
+        StartCoroutine(WaitTIme());
+
+    }
+
+    private IEnumerator WaitTIme()
+    {
+        canclick = false;
+        yield return new WaitForSeconds(0.6f);
+        canclick = true;
     }
 
     public void SPDelete()
