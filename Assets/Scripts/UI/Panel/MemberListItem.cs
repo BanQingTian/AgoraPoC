@@ -5,8 +5,11 @@ using UnityEngine;
 public class MemberListItem : MonoBehaviour
 {
     public ZUIButton Btn;
+
     public string ChannelName;
     public string Name;
+
+
 
     //public ZUIButton EqualSmallPoint;
 

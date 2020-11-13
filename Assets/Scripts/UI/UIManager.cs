@@ -123,7 +123,7 @@ public class UIManager : MonoBehaviour
 
     private IEnumerator ShootNormal()
     {
-        yield return new WaitForSeconds(5);
+        yield return new WaitForSeconds(8);
         HideHint();
     }
     private IEnumerator Shoot()
@@ -259,6 +259,5 @@ public class UIManager : MonoBehaviour
     }
 
     #endregion
-
 
 }

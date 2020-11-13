@@ -87,6 +87,7 @@ public class BarPanel : MonoBehaviour
         VideoMoveCenter.OnDeselected += reset;
         MapMoveCenter.OnDeselected += reset;
         MemberMoveCenter.OnDeselected += reset;
+
     }
 
     int curEnterVideoNumber = 1;
@@ -101,13 +102,13 @@ public class BarPanel : MonoBehaviour
             MoveRange.SetActive(true);
             if (UIManager.Instance.VideoP.mode == ZViewMode.MainSubMode)
             {
-                MoveRangePart2.transform.localPosition = new Vector3(721.3f, -131.7f, MoveRangePart2.transform.localPosition.z);
-                MoveRangePart3.transform.localPosition = new Vector3(721.3f, 174f, MoveRangePart3.transform.localPosition.z);
+                MoveRangePart2.transform.localPosition = new Vector3(670.3f, -132.5f, -245.6f);
+                MoveRangePart3.transform.localPosition = new Vector3(670.3f, 181.6f, -245.6f);
             }
             else
             {
-                MoveRangePart2.transform.localPosition = new Vector3(985.7f, -132.5f, -212.7f);
-                MoveRangePart3.transform.localPosition = new Vector3(985.7f, 181.6f, -212.7f);
+                MoveRangePart2.transform.localPosition = new Vector3(924.8f, -132.5f, -362.2f);
+                MoveRangePart3.transform.localPosition = new Vector3(924.8f, 181.6f, -362.2f);
             }
 
         }
@@ -120,8 +121,8 @@ public class BarPanel : MonoBehaviour
         ResetVideoMoveCenter();
         ShowAllBar();
 
-        var pos = UIManager.Instance.VideoP.m_Views[0].localPosition;
-        UIManager.Instance.VideoP.MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, UIManager.Instance.VideoP.MoveTip1.transform.localPosition.z);
+        //var pos = UIManager.Instance.VideoP.m_Views[0].localPosition;
+        //UIManager.Instance.VideoP.MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, UIManager.Instance.VideoP.MoveTip1.transform.localPosition.z);
     }
     public void VideoBarExit1()
     {

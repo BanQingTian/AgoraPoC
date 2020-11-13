@@ -95,7 +95,7 @@ public class VideoPanel : ZBasePanel
 
                 var pos = m_Views[0].localPosition;
 
-                MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, MoveTip1.transform.localPosition.z);
+               // MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, MoveTip1.transform.localPosition.z);
 
                 break;
         }
@@ -111,7 +111,7 @@ public class VideoPanel : ZBasePanel
         {
             MoveTip1.SetActive(b);
             var pos = m_Views[0].localPosition;
-            MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, MoveTip1.transform.localPosition.z);
+           // MoveTip1.transform.localPosition = new Vector3(pos.x, pos.y, MoveTip1.transform.localPosition.z);
         }
         else if (n == 2)
         {

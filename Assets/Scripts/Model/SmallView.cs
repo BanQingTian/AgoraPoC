@@ -18,7 +18,7 @@ public class SmallView : MonoBehaviour
     public Texture defaultTex = null;
 
     public string ChannelName;
-
+    public string MemberName;
     public ZUIButton CloseBtn;
     public TMPro.TextMeshProUGUI LabelTip;
 
@@ -114,7 +114,7 @@ public class SmallView : MonoBehaviour
             sv.SetForMultiChannelUser(ChannelName, m_Uid);
         }
         CloseBtn.gameObject.SetActive(true);
-        LabelTip.text = ChannelName.Replace("nreal", "5G成员");
+        LabelTip.text = MemberName;
     }
 
 }
